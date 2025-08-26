@@ -6,8 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.teamtest.domain.UserDTO;
-
+import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.service.UserService;
 
 import lombok.RequiredArgsConstructor;

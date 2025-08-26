@@ -1,4 +1,4 @@
-package com.example.teamtest.domain;
+package com.example.teamtest.domain.DTO;
 
 
 import jakarta.validation.constraints.Email;
@@ -35,4 +35,5 @@ public class UserDTO {
 	@NotBlank(message = "띄어쓰기는 안됩니다")
 	@Email(message = "이메일을 입력해 주세요")
 	private String email;
+
 }
