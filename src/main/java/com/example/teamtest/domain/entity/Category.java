@@ -1,6 +1,12 @@
 package com.example.teamtest.domain.entity;
 
+import com.example.teamtest.domain.Game;
+import com.example.teamtest.domain.QuestionType;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -17,8 +23,12 @@ public class Category {
 	@Id
 	private Integer id;
 
-	private String gamename;
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private Game gamename;
 	
-	private String describe;
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private QuestionType describe;
 
 }

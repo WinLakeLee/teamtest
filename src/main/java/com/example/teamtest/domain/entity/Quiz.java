@@ -31,7 +31,7 @@ public class Quiz {
 	private String answer;
 	
 	@ManyToOne
-	@JoinColumn
+	@JoinColumn(name = "id")
 	private Category category;
 	
 	@Column
