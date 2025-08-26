@@ -2,10 +2,12 @@ package com.example.teamtest.security;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.example.teamtest.domain.entity.UserEntity;
 
@@ -14,11 +16,21 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserDetailsImpl implements UserDetails{
+public class UserDetailsImpl implements UserDetails, OAuth2User{
 
 	private static final long serialVersionUID = 3666766485740613365L;
 	
 	private UserEntity userEntity;
+	
+	private Map<String, Object> attributes;
+	@Override
+	public Map<String, Object> getAttributes() {
+		return null;
+	}
+	@Override
+	public String getName() {
+		return null;
+	}
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -55,6 +67,10 @@ public class UserDetailsImpl implements UserDetails{
 	}
 	public UserDetailsImpl(UserEntity userEntity) {
 		this.userEntity = userEntity;
+	}
+	public UserDetailsImpl(UserEntity entity, Map<String, Object> attributes) {
+		this.userEntity = entity;
+		this.attributes = attributes;
 	}
 	
 }

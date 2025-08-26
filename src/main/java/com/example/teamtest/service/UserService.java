@@ -30,7 +30,7 @@ public class UserService {
 		return entity;
   }
     
-	public Long insert(UserDTO dto) {
+	public UserEntity insert(UserDTO dto) {
 		
 		UserEntity entity = new UserEntity();
 		entity.setUsername(dto.getUsername());
@@ -41,7 +41,7 @@ public class UserService {
 		entity.setCount(0);
 		entity.setPoint(0);
 		
-		return userRepository.save(entity).getId();
+		return userRepository.save(entity);
 	}
 	
 }
