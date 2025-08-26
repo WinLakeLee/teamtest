@@ -23,6 +23,13 @@ public class UserController {
 	private final UserService userService;
 	private final JwtService jwtService;
 	private final AuthenticationManager authenticationManager;
+
+	@PostMapping("/signup")
+	public ResponseEntity<?> singup (@RequestBody UserDTO user) {
+		Long id = userService.insert(user).getId();
+		
+		return new ResponseEntity<>("회원가입 성공, 유저번호는" + id + "입니다" , HttpStatus.OK);
+	}
 	
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody UserDTO userDTO){
@@ -32,10 +39,4 @@ public class UserController {
 		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization").build();
 	}
 	
-	@PostMapping("/signup")
-	public ResponseEntity<?> singup (@RequestBody UserDTO user) {
-		Long id = userService.insert(user);
-		
-		return new ResponseEntity<>("회원가입 성공, 유저번호는" + id + "입니다" , HttpStatus.OK);
-	}
 }
