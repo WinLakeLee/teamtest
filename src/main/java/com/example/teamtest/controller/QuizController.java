@@ -19,4 +19,5 @@ public class QuizController {
 	public ResponseEntity<?> generateQuiz(@RequestBody QuizEntity quiz) {
 		return null;
 	}
+	
 }
