@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.teamtest.Repository.CategoryRepository;
 import com.example.teamtest.Repository.QuizRepository;
+import com.example.teamtest.Repository.UserRepository;
+import com.example.teamtest.domain.entity.UserEntity;
 import com.example.teamtest.gameSesstion.GameSesstion;
 
 import lombok.RequiredArgsConstructor;
@@ -16,12 +18,34 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BgroundService {
 
+    private final UserRepository userRepository;
 	private final QuizRepository quizRepository;
 	private final CategoryRepository categoryRepository;
 	private final Map<String, GameSesstion> sessionMap = new ConcurrentHashMap<>();
-	
-	//게임시작
 
+	// 점수 DB저장
+	public void saveSesstionScore(GameSesstion sesstion) {
+		UserEntity user = userRepository.findByUsername(sesstion.getUsername()).orElse(null);
+		
+		// DB에 유저가 없을때 (혹시 몰라서 해놨어요 필요없으시면 지우시면됩니다)
+		if(user == null) {
+			return;
+		}
+		
+		Integer savePoint = user.getPoint(); // 기존 저장된 포인트
+		int saveScore = sesstion.getScore(); // 세션에 저장된 점수
+		// point에 score 저장
+		if(savePoint == null) {
+			savePoint = 0;
+		} else {
+			savePoint += saveScore;
+			user.setPoint(savePoint);
+		}
+		
+		userRepository.save(user);
+		
+		
+	}
 
 	
 }
