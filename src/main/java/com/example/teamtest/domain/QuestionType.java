@@ -1,5 +1,5 @@
 package com.example.teamtest.domain;
 
 public enum QuestionType {
-	ENGLISH, KOREAN, NUMBER
+	AREA, GUN, NUM, UNIT, BUILD, GAMER, ULT
 }
