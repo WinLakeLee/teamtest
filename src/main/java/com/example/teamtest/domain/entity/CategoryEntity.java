@@ -34,5 +34,7 @@ public class CategoryEntity {
 	@Column
 	@Enumerated(EnumType.STRING)
 	private QuestionType description;
+	
+	
 
 }
