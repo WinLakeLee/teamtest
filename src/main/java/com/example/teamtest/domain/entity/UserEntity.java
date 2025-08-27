@@ -42,18 +42,20 @@ public class UserEntity {
 	@Column(nullable = false, unique = true)
 	private String email;
 	
+	// 참여 횟수
 	@Column
 	private Integer count;
 	
+	// 등급
 	@Column
 	@Enumerated(EnumType.STRING)
 	private Grade grade;
-	
+
+	// 상점 구매용
 	@Column
 	private Integer point;
 	
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<MyItemEntity> items = new ArrayList<>();
-	
 	
 }

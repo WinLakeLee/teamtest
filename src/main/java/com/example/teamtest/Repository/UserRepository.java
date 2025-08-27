@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 
 import com.example.teamtest.domain.entity.UserEntity;
-import java.util.Optional;
 
 
 @Repository
