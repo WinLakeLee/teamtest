@@ -1,5 +1,6 @@
 package com.example.teamtest.controller;
 
+import javax.security.sasl.AuthenticationException;
 import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
@@ -33,7 +34,8 @@ public class UserController {
 
 	// 회원가입
 	@PostMapping("/signup")
-	public ResponseEntity<?> singup (@RequestBody UserDTO user) {
+	public ResponseEntity<?> signup (@RequestBody UserDTO user) {
+		System.out.println(user.toString());
 		Long id = userService.insert(user).getId();
 		
 		return new ResponseEntity<>("회원가입 성공, 유저번호는" + id + "입니다" , HttpStatus.OK);
@@ -56,11 +58,12 @@ public class UserController {
 	
 	// 로그인
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody UserDTO userDTO){
+	public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
 		UsernamePasswordAuthenticationToken cred = new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword());
 		Authentication auth = authenticationManager.authenticate(cred);
 		String jwt = jwtService.createToken(auth.getName(), auth.getAuthorities());
 		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization").build();
+
 	}
 	
 }
