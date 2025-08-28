@@ -55,6 +55,10 @@ public class UserEntity {
 	@Column
 	private Integer point;
 	
+	// 당일 점수
+	@Column
+	private Integer dailyScore;
+	
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST)
     private List<MyItemEntity> items;
 	

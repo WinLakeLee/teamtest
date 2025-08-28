@@ -1,4 +1,4 @@
-package com.example.teamtest.gameSesstion;
+package com.example.teamtest.gameSession;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -13,13 +13,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class GameSesstion {
+public class GameSession {
 
 	private final String username; // 로그인 유저 아이디
 	private int score = 0; // 갱신점수
 	private Set<Long> usedQuestionIds = new HashSet<>(); // 사용중인 문제 id
 	private long startTimeMillis = System.currentTimeMillis(); // 게임시작 시간  
-	private LocalDate date = LocalDate.now(); // 날짜
+	private LocalDate date = LocalDate.of(2025, 9, 1);
 	private int gamePlay = 0;  // 당일날 게임횟수
 	
 	// 점수갱신

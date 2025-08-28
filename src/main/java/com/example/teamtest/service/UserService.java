@@ -22,16 +22,9 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
-	public UserEntity getUser(String username, String password)
-//			throws AuthenticationException
-	{
-		UserEntity entity = userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 아이디입니다."));
+	public UserEntity getUser(String username) {
+		return userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 아이디입니다."));
 
-		if(password.equals(entity.getPassword())) {
-			return null;
-//	            throw new AuthenticationException();
-	    }
-		return entity;
   }
     
 	public UserEntity insert(UserDTO dto) {

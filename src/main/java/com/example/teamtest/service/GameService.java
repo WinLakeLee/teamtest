@@ -93,11 +93,9 @@ public class GameService {
 		// 받아온 아이디로 퀴즈 조회
 		QuizEntity quiz = quizRepository.findById((Long)map.get("id")).orElseThrow();
 		// 정답을 맞출 시 true 반환
-		if(quiz.getAnswer().equals(map.get("answer"))) {
+		if(quiz.getAnswer().equals(map.get("answer")))
 			return Integer.valueOf(quiz.getScore());
-		} else {
-		// 정답을 틀리거나 없을 시 false 반환
+		else 
 			return 0;
-		}
 	}
 }

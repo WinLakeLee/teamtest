@@ -3,6 +3,7 @@ package com.example.teamtest.security;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,13 +24,14 @@ public class UserDetailsImpl implements UserDetails, OAuth2User{
 	private UserEntity userEntity;
 	
 	private Map<String, Object> attributes;
+	
 	@Override
 	public Map<String, Object> getAttributes() {
 		return null;
 	}
 	@Override
 	public String getName() {
-		return null;
+		return userEntity.getUsername();
 	}
 	
 	@Override

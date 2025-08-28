@@ -30,7 +30,7 @@ public class UserController {
 	private final AuthenticationManager authenticationManager;
 
 	// 회원가입
-	@PostMapping("/signup")
+	@PostMapping("signup")
 	public ResponseEntity<?> signup (@RequestBody UserDTO user) {
 		System.out.println(user.toString());
 		Long id = userService.insert(user).getId();
@@ -39,14 +39,14 @@ public class UserController {
 	}
 	
 	// 회원정보 수정
-	@PutMapping("/update/{id}")
+	@PutMapping("update/{id}")
 	public ResponseEntity<?> updateUser(Authentication auth, @RequestBody UserDTO dto) {
 		UserEntity user = userService.update(auth.getName(), dto);
 		return ResponseEntity.ok(user);
 	}
 	
 	// 회원탈퇴
-	@DeleteMapping("/delete")
+	@DeleteMapping("delete")
 	public ResponseEntity<?> deleteUser(Authentication auth, @RequestBody Map<?, ?> map) {
 		userService.delete(auth.getName(), map.get("password").toString());
 		
@@ -54,13 +54,18 @@ public class UserController {
 	}
 	
 	// 로그인
-	@PostMapping("/login")
+	@PostMapping("login")
 	public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
 		UsernamePasswordAuthenticationToken cred = new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword());
 		Authentication auth = authenticationManager.authenticate(cred);
 		String jwt = jwtService.createToken(auth.getName(), auth.getAuthorities());
 		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization").build();
 
+	}
+	
+	@PostMapping("userinfo")
+	public ResponseEntity<?> userInfo(Authentication auth) {
+		return ResponseEntity.ok(userService.getUser(auth.getName()));
 	}
 	
 }
