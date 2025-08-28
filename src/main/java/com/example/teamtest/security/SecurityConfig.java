@@ -18,8 +18,7 @@ public class SecurityConfig {
 	
 	private final String[] PUBLIC_URIS = {
 			"/login",
-			"/signup",
-			"/quiz/**"
+			"/signup"
 			
 	};
 
