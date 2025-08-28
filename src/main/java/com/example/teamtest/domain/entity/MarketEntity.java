@@ -27,7 +27,4 @@ public class MarketEntity {
 	@Column(nullable = false)
 	private Integer itemPrice;
 	
-	
-	
-	
 }
