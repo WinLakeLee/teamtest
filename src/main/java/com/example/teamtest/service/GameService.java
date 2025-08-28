@@ -1,6 +1,7 @@
 package com.example.teamtest.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -34,41 +35,57 @@ public class GameService {
 	 * @param map 
 	 * @return
 	 */
-	public QuizQuestionDTO generateQuiz(Map<?, ?> map) {
-		
-		QuizQuestionDTO dto = new QuizQuestionDTO();
-		List<QuestionType>questionTypes = List.of(QuestionType.values());
-		List<String> answerList = new ArrayList<>();
-				
-		Collections.shuffle(questionTypes);
-		
-		QuestionType type = questionTypes.get(0);
-		// 랜덤 추출을 위한 리스트 생성
-		CategoryEntity category = categoryRepository
-				.findByGamenameAndDescription(Enum.valueOf(Game.class, (String)map.get("game")), type)
-				.orElseThrow();
-		// 특정 게임의 모든 문제 추출
-		QuizEntity quiz = quizRepository.findSomeOneByCategory(category);
-		// dto의 퀴즈 id와 질문 세팅
-		dto.setQuizId(quiz.getQuizId());
-		dto.setQuestion(quiz.getQuestion());
-		// 카테고리에 속하는 답변 리스트 생성
-		for(;;) {
-			answerList.add(quizRepository.findSomeOneByCategory(category).getAnswer());
-			answerList.stream().distinct().collect(Collectors.toList());
-			if(answerList.size() == 4) 
-				break;
-		}
-		// 답 리스트에 이미 정답이 있을 시
-		if(answerList.contains(quiz.getAnswer())) {
-			dto.setAnswer(answerList);
-			return dto;
-		} else {	
-		// 답변 리스트에 정답이 없을 시
-			answerList.add(random.nextInt(4), quiz.getAnswer());
-			dto.setAnswer(answerList);
-			return dto;
-		}
+	public QuizQuestionDTO generateQuiz(String game) {
+
+	    QuizQuestionDTO dto = new QuizQuestionDTO();
+	    
+	    // Convert to a mutable list
+	    List<CategoryEntity> categoryList = categoryRepository.findAll();
+	    
+	    CategoryEntity category = categoryList.stream()
+	            .filter(c -> c.getGamename().equals(Enum.valueOf(Game.class, game)))
+	            .findFirst()
+	            .orElse(null);
+
+	    if (category == null) {
+	    	return null;
+	    }
+
+	    // Find a random quiz question from the selected category
+	    QuizEntity mainQuiz = quizRepository.findSomeOneByCategory(category.getCategoryId());
+
+	    if (mainQuiz == null) {
+	        return null;
+	    }
+
+	    dto.setQuizId(mainQuiz.getQuizId());
+	    dto.setQuestion(mainQuiz.getQuestion());
+	    dto.setScore(Integer.valueOf(mainQuiz.getScore()));
+
+	    // Create a list for the answers, starting with the correct one
+	    List<String> answerList = new ArrayList<>();
+	    answerList.add(mainQuiz.getAnswer());
+
+	    // Get a list of ALL answers from the SAME category, excluding the correct one
+	    List<String> otherAnswers = 
+	        quizRepository.findAllByCategory(mainQuiz.getCategory()).stream()
+	            .map(QuizEntity::getAnswer)
+	            .filter(answer -> !answer.equals(mainQuiz.getAnswer()))
+	            .collect(Collectors.toList());
+	    
+	    // Shuffle the other answers to pick three random incorrect ones
+	    Collections.shuffle(otherAnswers);
+	    
+	    // Add the first three incorrect answers to our answer list
+	    otherAnswers.stream()
+	        .limit(3)
+	        .forEach(answerList::add);
+
+	    // Shuffle the final list to mix the correct and incorrect answers
+	    Collections.shuffle(answerList);
+	    
+	    dto.setAnswer(answerList);
+	    return dto;
 	}
 	/**
 	 * 
