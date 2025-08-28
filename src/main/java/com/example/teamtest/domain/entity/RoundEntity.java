@@ -1,40 +1,40 @@
 package com.example.teamtest.domain.entity;
 
-import com.example.teamtest.domain.Game;
-import com.example.teamtest.domain.QuestionType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name="category")
+@Table(name = "round")
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryEntity {
+public class RoundEntity {
 
 	@Id
+	@Column(name = "round_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer categoryId;
-
-	@Column
-	@Enumerated(EnumType.STRING)
-	private Game gamename;
+	private Integer roundId;
+	
+	@JoinColumn(name="user_id", unique = true)
+	@OneToOne(fetch = FetchType.EAGER)
+	private UserEntity user;
 	
 	@Column
-	@Enumerated(EnumType.STRING)
-	private QuestionType description;
+	private Integer dayOneScore;
 	
+	@Column
+	private Integer dayTwoScore;
 	
-
+	@Column
+	private Integer dayThreeScore;
 }
