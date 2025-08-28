@@ -1,10 +1,8 @@
 package com.example.teamtest.domain.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,7 +24,6 @@ import lombok.NoArgsConstructor;
 public class DailyQuiz {
 	
 	@Id
-	@Column(name = "daily_quiz_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long dailyQuizId;
 
@@ -35,9 +32,7 @@ public class DailyQuiz {
 	private UserEntity user;
 	
 	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = "quiz_list", joinColumns = 
-			@JoinColumn(name = "daily_quiz_id")
-	)
-	private List<Integer> quizList = new ArrayList<>();
+	@CollectionTable(name = "quiz_list")
+	private List<Integer> quizList;
 	
 }

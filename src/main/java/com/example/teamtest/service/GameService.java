@@ -18,6 +18,7 @@ import com.example.teamtest.domain.DTO.QuizQuestionDTO;
 import com.example.teamtest.domain.entity.CategoryEntity;
 import com.example.teamtest.domain.entity.DailyQuiz;
 import com.example.teamtest.domain.entity.QuizEntity;
+import com.example.teamtest.domain.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,26 +47,33 @@ public class GameService {
 	            .orElse(null);
 
 	    List<QuizEntity> allQuizzes = quizRepository.findAllByCategory(category);
-	    List<Integer> answered = dailyQuizRepository.findQuizListByUsername(username);
+
+	    UserEntity user = userRepository.findByUsername(username).orElseThrow();
+	    
 	    DailyQuiz dailyQuiz = dailyQuizRepository.findByUser(
 	    		userRepository.findByUsername(username).orElseThrow())
-	    		.orElseGet(
-	    				() -> dailyQuizRepository
-	    				.save(new DailyQuiz(null, userRepository.findByUsername(username).orElseThrow(), answered)));
+	    		.orElseGet(() -> {
+	    			DailyQuiz newDailyQuiz = new DailyQuiz();
+	    			newDailyQuiz.setUser(user);
+	    			newDailyQuiz.setQuizList(new ArrayList<>());
+	    			return dailyQuizRepository.save(newDailyQuiz);
+	    			}
+	    		);
 
 	    List<Integer> answeredQuizIds = dailyQuiz.getQuizList();
 	    
 	    List<QuizEntity> newQuizzes = allQuizzes.stream()
 	            .filter(quiz -> !answeredQuizIds.contains(quiz.getQuizId().intValue()))
 	            .collect(Collectors.toList());
-	    
 	    Collections.shuffle(newQuizzes);
+	    System.out.println(newQuizzes);
 	    
 	    QuizEntity mainQuiz = newQuizzes.stream()
 	    		.distinct()
 	    		.findAny()
 	    		.orElse(null);
-	    answered.add(mainQuiz.getQuizId().intValue());
+	    answered.addLast(mainQuiz.getQuizId().intValue());
+	    System.out.println(answered);
 	    dailyQuiz.setQuizList(answered);
 	    dailyQuizRepository.save(dailyQuiz);
 	    
