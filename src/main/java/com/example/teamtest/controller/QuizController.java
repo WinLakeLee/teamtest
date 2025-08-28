@@ -17,7 +17,7 @@ public class QuizController {
 	@Autowired
 	private BgroundService bgroundService;
 
-	@PostMapping("/game")
+	@PostMapping("{game}")
 	public ResponseEntity<?> generateQuiz(@RequestBody QuizEntity quiz) {
 		return null;
 	}
