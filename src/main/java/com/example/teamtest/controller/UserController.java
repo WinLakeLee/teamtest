@@ -49,7 +49,6 @@ public class UserController {
 	@DeleteMapping("delete")
 	public ResponseEntity<?> deleteUser(Authentication auth, @RequestBody Map<?, ?> map) {
 		userService.delete(auth.getName(), map.get("password").toString());
-		
 		return ResponseEntity.ok(null);
 	}
 	

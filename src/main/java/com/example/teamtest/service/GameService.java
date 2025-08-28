@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import com.example.teamtest.Repository.CategoryRepository;
 import com.example.teamtest.Repository.QuizRepository;
+import com.example.teamtest.Repository.DailyQuizRepository;
+import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.domain.Game;
 import com.example.teamtest.domain.DTO.QuizQuestionDTO;
 import com.example.teamtest.domain.entity.CategoryEntity;
+import com.example.teamtest.domain.entity.DailyQuiz;
 import com.example.teamtest.domain.entity.QuizEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -24,35 +27,48 @@ public class GameService {
 
 	private final QuizRepository quizRepository;
 	private final CategoryRepository categoryRepository;
-
+	private final DailyQuizRepository dailyQuizRepository;
+	private final UserRepository userRepository;
+	
 	/**
 	 * 
 	 * @param map 
 	 * @return
 	 */
-	public QuizQuestionDTO generateQuiz(String game) {
-
+	public QuizQuestionDTO generateQuiz(String game, String username) {
+		
 	    QuizQuestionDTO dto = new QuizQuestionDTO();
-	    
 	    // 전체 카테고리 조회
 	    List<CategoryEntity> categoryList = categoryRepository.findAll();
-	    
 	    CategoryEntity category = categoryList.stream()
 	            .filter(c -> c.getGamename().equals(Enum.valueOf(Game.class, game)))
-	            .findFirst()
+	            .findAny()
 	            .orElse(null);
 
-	    if (category == null) {
-	    	return null;
-	    }
+	    List<QuizEntity> allQuizzes = quizRepository.findAllByCategory(category);
+	    List<Integer> answered = dailyQuizRepository.findQuizListByUsername(username);
+	    DailyQuiz dailyQuiz = dailyQuizRepository.findByUser(
+	    		userRepository.findByUsername(username).orElseThrow())
+	    		.orElseGet(
+	    				() -> dailyQuizRepository
+	    				.save(new DailyQuiz(null, userRepository.findByUsername(username).orElseThrow(), answered)));
 
-	    // 선택 된 카테고리에서 랜덤 문제 추출
-	    QuizEntity mainQuiz = quizRepository.findSomeOneByCategory(category.getCategoryId());
-
-	    if (mainQuiz == null) {
-	        return null;
-	    }
-
+	    List<Integer> answeredQuizIds = dailyQuiz.getQuizList();
+	    
+	    List<QuizEntity> newQuizzes = allQuizzes.stream()
+	            .filter(quiz -> !answeredQuizIds.contains(quiz.getQuizId().intValue()))
+	            .collect(Collectors.toList());
+	    
+	    Collections.shuffle(newQuizzes);
+	    
+	    QuizEntity mainQuiz = newQuizzes.stream()
+	    		.distinct()
+	    		.findAny()
+	    		.orElse(null);
+	    answered.add(mainQuiz.getQuizId().intValue());
+	    dailyQuiz.setQuizList(answered);
+	    dailyQuizRepository.save(dailyQuiz);
+	    
 	    dto.setQuizId(mainQuiz.getQuizId());
 	    dto.setQuestion(mainQuiz.getQuestion());
 
@@ -74,7 +90,6 @@ public class GameService {
 
 	    // 정답 리스트 섞기
 	    Collections.shuffle(answerList);
-	    
 	    dto.setAnswer(answerList);
 
 	    return dto;
@@ -93,4 +108,5 @@ public class GameService {
 		else 
 			return 0;
 	}
+
 }
