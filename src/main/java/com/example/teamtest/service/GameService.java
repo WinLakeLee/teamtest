@@ -39,7 +39,7 @@ public class GameService {
 
 	    QuizQuestionDTO dto = new QuizQuestionDTO();
 	    
-	    // Convert to a mutable list
+	    // 전체 카테고리 조회
 	    List<CategoryEntity> categoryList = categoryRepository.findAll();
 	    
 	    CategoryEntity category = categoryList.stream()
@@ -51,7 +51,7 @@ public class GameService {
 	    	return null;
 	    }
 
-	    // Find a random quiz question from the selected category
+	    // 선택 된 카테고리에서 랜덤 문제 추출
 	    QuizEntity mainQuiz = quizRepository.findSomeOneByCategory(category.getCategoryId());
 
 	    if (mainQuiz == null) {
@@ -62,26 +62,23 @@ public class GameService {
 	    dto.setQuestion(mainQuiz.getQuestion());
 	    dto.setScore(Integer.valueOf(mainQuiz.getScore()));
 
-	    // Create a list for the answers, starting with the correct one
+	    // 문제에서 정답 추출
 	    List<String> answerList = new ArrayList<>();
 	    answerList.add(mainQuiz.getAnswer());
 
-	    // Get a list of ALL answers from the SAME category, excluding the correct one
+	    // 다른 문제들로부터 정답 추출
 	    List<String> otherAnswers = 
 	        quizRepository.findAllByCategory(mainQuiz.getCategory()).stream()
 	            .map(QuizEntity::getAnswer)
 	            .filter(answer -> !answer.equals(mainQuiz.getAnswer()))
 	            .collect(Collectors.toList());
-	    
-	    // Shuffle the other answers to pick three random incorrect ones
-	    Collections.shuffle(otherAnswers);
-	    
-	    // Add the first three incorrect answers to our answer list
+
+	    // 정답 리스트에 다른 정답들 추가
 	    otherAnswers.stream()
 	        .limit(3)
 	        .forEach(answerList::add);
 
-	    // Shuffle the final list to mix the correct and incorrect answers
+	    // 정답 리스트 섞기
 	    Collections.shuffle(answerList);
 	    
 	    dto.setAnswer(answerList);
@@ -92,15 +89,15 @@ public class GameService {
 	 * @param map id, answer 받아옴
 	 * @return
 	 */
-	public boolean resolve(Map<?, ?> map) {
+	public Integer resolve(Map<?, ?> map) {
 		// 받아온 아이디로 퀴즈 조회
 		QuizEntity quiz = quizRepository.findById((Long)map.get("id")).orElseThrow();
 		// 정답을 맞출 시 true 반환
 		if(quiz.getAnswer().equals(map.get("answer"))) {
-			return true;
+			return Integer.valueOf(quiz.getScore());
 		} else {
 		// 정답을 틀리거나 없을 시 false 반환
-			return false;
+			return 0;
 		}
 	}
 }
