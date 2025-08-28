@@ -16,6 +16,7 @@ public class Items {
 		
 		// 아이템 예시
 		return args -> {
+			if(marketRepository.count() == 0) {
 			MarketEntity item1 = new MarketEntity(null, "빨간 포션", 100);
             MarketEntity item2 = new MarketEntity(null, "파란 포션", 150);
             MarketEntity item3 = new MarketEntity(null, "검은 검", 500);
@@ -25,6 +26,7 @@ public class Items {
             marketRepository.save(item2);
             marketRepository.save(item3);
             marketRepository.save(item4);
+			}
 		};
 	}
 	
