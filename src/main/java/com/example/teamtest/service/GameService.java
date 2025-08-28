@@ -1,7 +1,6 @@
 package com.example.teamtest.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.example.teamtest.Repository.CategoryRepository;
 import com.example.teamtest.Repository.QuizRepository;
 import com.example.teamtest.domain.Game;
-import com.example.teamtest.domain.QuestionType;
 import com.example.teamtest.domain.DTO.QuizQuestionDTO;
 import com.example.teamtest.domain.entity.CategoryEntity;
 import com.example.teamtest.domain.entity.QuizEntity;
@@ -26,10 +24,7 @@ public class GameService {
 
 	private final QuizRepository quizRepository;
 	private final CategoryRepository categoryRepository;
-	/**
-	 * 랜덤
-	 */
-	private Random random;
+
 	/**
 	 * 
 	 * @param map 
@@ -60,7 +55,6 @@ public class GameService {
 
 	    dto.setQuizId(mainQuiz.getQuizId());
 	    dto.setQuestion(mainQuiz.getQuestion());
-	    dto.setScore(Integer.valueOf(mainQuiz.getScore()));
 
 	    // 문제에서 정답 추출
 	    List<String> answerList = new ArrayList<>();
@@ -82,6 +76,7 @@ public class GameService {
 	    Collections.shuffle(answerList);
 	    
 	    dto.setAnswer(answerList);
+
 	    return dto;
 	}
 	/**
@@ -92,7 +87,7 @@ public class GameService {
 	public Integer resolve(Map<?, ?> map) {
 		// 받아온 아이디로 퀴즈 조회
 		QuizEntity quiz = quizRepository.findById((Long)map.get("id")).orElseThrow();
-		// 정답을 맞출 시 true 반환
+		// 정답을 맞출 시 점수 반환
 		if(quiz.getAnswer().equals(map.get("answer")))
 			return Integer.valueOf(quiz.getScore());
 		else 

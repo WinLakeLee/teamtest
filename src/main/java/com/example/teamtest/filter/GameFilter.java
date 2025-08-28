@@ -12,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.teamtest.jwt.JwtService;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,7 @@ public class GameFilter extends OncePerRequestFilter {
 		if(request.getRequestURI().startsWith(PREFIX)) {
 			String jwt = jwtService.resolveToken(request);
 			String username = jwtService.getUsername(jwt);
-			if(jwtService.validate(jwt)) {
+			if(StringUtils.isNotEmpty(username)) {
 				if(attempts.containsKey(username)) {
 					if(attempts.get(username) >= DAILY_LIMIT) 
 						new CannotProceedException();
