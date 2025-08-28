@@ -53,7 +53,7 @@ public class UserEntity {
 	private Integer point;
 	
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    private List<MyItemEntity> items = new ArrayList<>();
+    private List<MyItemEntity> items;
 	
 	
 }
