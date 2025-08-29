@@ -59,7 +59,10 @@ public class UserController {
 		UsernamePasswordAuthenticationToken cred = new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword());
 		Authentication auth = authenticationManager.authenticate(cred);
 		String jwt = jwtService.createToken(auth.getName(), auth.getAuthorities());
-		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization").build();
+		return ResponseEntity.ok()
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+				.header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization")
+				.build();
 
 	}
 	

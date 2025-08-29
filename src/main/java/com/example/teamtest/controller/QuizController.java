@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,12 +22,21 @@ public class QuizController {
 	
 	@PostMapping("{game}")
 	public ResponseEntity<?> generateQuiz(@PathVariable String game) {
+		System.out.println(game);
 		return ResponseEntity.ok(gameService.generateQuiz(game.toUpperCase()));
 	}
 	
 	@PostMapping
 	public ResponseEntity<?> resolve(@RequestBody Map<?, ?> map) {
-		return ResponseEntity.ok(resolve(map));
+		Integer score = gameService.resolve(map);
+		System.out.println(score);
+		return ResponseEntity.ok(score);
+	}
+	
+	@PostMapping("result")
+	public ResponseEntity<?> result(@RequestBody Map<?, ?> map) {
+		gameService.result(map);
+		return ResponseEntity.ofNullable(null);
 	}
 	
 }

@@ -1,6 +1,5 @@
 package com.example.teamtest.domain.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.example.teamtest.domain.Grade;
@@ -58,6 +57,14 @@ public class UserEntity {
 	// 당일 점수
 	@Column
 	private Integer dailyScore;
+	
+	// 총합 점수
+	@Column
+	private Integer totalScore;
+	
+	// 지난 주 점수
+	@Column
+	private Integer lastWeekScore;
 	
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST)
     private List<MyItemEntity> items;

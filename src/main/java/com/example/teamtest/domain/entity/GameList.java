@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// 최고 점수
 @Data
 @Entity
 @Table(name = "game_list")
@@ -19,14 +20,32 @@ public class GameList {
 	private Long userId;
 	
 	@Column
-	private Integer lolScore;
+	private Integer lolWeeklyScore;
 	
 	@Column
-	private Integer bgScore;
+	private Integer lolMaxScore;
 	
 	@Column
-	private Integer scScore;
+	private Integer bgWeeklyScore;
 	
 	@Column
-	private Integer loaScore;
+	private Integer bgMaxScore;
+	
+	@Column
+	private Integer scWeeklyScore;
+	
+	@Column
+	private Integer scMaxScore;
+	
+	@Column
+	private Integer loaWeeklyScore;
+
+	@Column
+	private Integer loaMaxScore;
+	
+	public Integer sum() {
+		return this.getBgWeeklyScore() + this.getLoaWeeklyScore() + this.getLolWeeklyScore() + this.getBgWeeklyScore();
+	}
+	
+	
 }
