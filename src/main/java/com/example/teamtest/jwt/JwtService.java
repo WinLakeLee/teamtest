@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 public class JwtService {
 
-	static final long EXPIRATIONTIME = 5 * 60 * 1000;
+	static final long EXPIRATIONTIME = 24 * 60 * 60 * 1000;
 	
 	static final String PREFIX = "Bearer ";
 	
