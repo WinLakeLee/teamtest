@@ -1,31 +1,34 @@
 package com.example.teamtest.controller;
 
-import java.util.Map;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.teamtest.jwt.JwtService;
-import lombok.RequiredArgsConstructor;
-
+import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
+import com.example.teamtest.jwt.JwtService;
 import com.example.teamtest.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
+	private final UserRepository userRepository;
 	private final UserService userService;
 	private final JwtService jwtService;
 	private final AuthenticationManager authenticationManager;
@@ -41,25 +44,39 @@ public class UserController {
 	
 	// 회원정보 조회
 	@GetMapping("/userinfo")
-	public ResponseEntity<?> userinfo(Authentication auth) {
-		UserEntity user = userService.getUser(auth.getName());
-		
-		return new ResponseEntity<>(user, HttpStatus.OK);
-	}
+    public ResponseEntity<UserDTO> userinfo(Authentication auth) {
+        UserEntity user = userService.getUser(auth.getName());
+
+        UserDTO dto = UserDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .password(null)
+                .build();
+
+        return ResponseEntity.ok(dto);
+    }
+
 	
 	// 회원정보 수정
 	@PutMapping("/update")
 	public ResponseEntity<?> updateUser(Authentication auth, @RequestBody UserDTO dto) {
-		UserEntity user = userService.update(auth.getName(), dto);
-		return ResponseEntity.ok(user);
+	    String username = auth.getName();
+	    UserEntity updated = userService.update(username, dto);
+	    return ResponseEntity.ok(updated);
 	}
 	
 	// 회원탈퇴
 	@DeleteMapping("/delete")
-	public ResponseEntity<?> deleteUser(Authentication auth, @RequestBody Map<?, ?> map) {
-		userService.delete(auth.getName(), map.get("password").toString());
+	public ResponseEntity<?> deleteUser(Authentication auth, @RequestParam String password) {
+		UserEntity user = userRepository.findByUsername(auth.getName()).get();
+		boolean result = userService.delete(auth, password);
 		
-		return ResponseEntity.ok(null);
+		if(result)
+			return ResponseEntity.ok("회원탈퇴 완료");
+		else
+			return ResponseEntity.ok("비밀번호 오류");
 	}
 	
 	// 로그인
