@@ -48,6 +48,7 @@ public class MarketController {
 	// 아이템 구매
 	@PostMapping("/purchase")
 	public ResponseEntity<?> purchaseItem(@RequestBody PurchaseRequest request) {
+
 	    try {
 	      marketService.purchaseItem(request.getUserId(), request.getItemId());
 	      return ResponseEntity.ok("구매 완료");

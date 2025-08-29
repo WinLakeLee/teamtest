@@ -42,11 +42,21 @@ public class UserController {
 	
 	// 회원정보 조회
 	@GetMapping("/userinfo")
-	public ResponseEntity<?> userinfo(Authentication auth) {
-		UserEntity user = userService.getUser(auth.getName());
-		
-		return new ResponseEntity<>(user, HttpStatus.OK);
-	}
+    public ResponseEntity<UserDTO> userinfo(Authentication auth) {
+        UserEntity user = userService.getUser(auth.getName());
+
+        UserDTO dto = UserDTO.builder()
+        		.id(user.getId())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .password(null)
+                .point(user.getPoint())
+                .build();
+
+        return ResponseEntity.ok(dto);
+    }
+
 	
 	// 회원정보 수정
 	@PutMapping("/update")
