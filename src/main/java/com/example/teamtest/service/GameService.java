@@ -2,19 +2,24 @@ package com.example.teamtest.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.teamtest.Repository.CategoryRepository;
 import com.example.teamtest.Repository.QuizRepository;
+import com.example.teamtest.Repository.GameListRepository;
 import com.example.teamtest.domain.Game;
 import com.example.teamtest.domain.QuestionType;
 import com.example.teamtest.domain.DTO.QuizQuestionDTO;
 import com.example.teamtest.domain.entity.CategoryEntity;
+import com.example.teamtest.domain.entity.GameList;
 import com.example.teamtest.domain.entity.QuizEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +30,8 @@ public class GameService {
 
 	private final QuizRepository quizRepository;
 	private final CategoryRepository categoryRepository;
+	private final GameListRepository gameListRepository;
+	
 	/**
 	 * 랜덤
 	 */
@@ -86,4 +93,56 @@ public class GameService {
 			return false;
 		}
 	}
+	
+	// 퀴즈별 점수 저장
+	@Transactional
+	public void addScore(Long userId, String gamename, byte score) {
+		 GameList gameList = gameListRepository.findById(userId).orElse(new GameList(userId, 0, 0, 0, 0));
+		 
+			 
+			 switch (gamename.toUpperCase()) {
+			 case "LOL":
+				 gameList.setLolScore(gameList.getLolScore() + score);
+				 break;
+			 case "BG":
+				 gameList.setBgScore(gameList.getBgScore() + score);
+				 break;
+			 case "SC":
+				 gameList.setScScore(gameList.getScScore() + score);
+				 break;
+			 case "MS":
+				 gameList.setMsScore(gameList.getMsScore() + score);
+				 break;
+			 default:
+				 break;
+			 
+		 }
+     // DB에 저장 (insert 또는 update)
+     gameListRepository.save(gameList);
+	}
+
+	
+	public Map<String, List<GameList>> getScore() {
+	    Map<String, List<GameList>> Score = new HashMap<>();
+
+	    List<GameList> lolTop5 = gameListRepository.findAllByOrderByLolScoreDesc()
+	            .stream().limit(5).toList();
+	    Score.put("LOL", lolTop5);
+
+	    List<GameList> bgTop5 = gameListRepository.findAllByOrderByBgScoreDesc()
+	            .stream().limit(5).toList();
+	    Score.put("BG", bgTop5);
+
+	    List<GameList> scTop5 = gameListRepository.findAllByOrderByScScoreDesc()
+	            .stream().limit(5).toList();
+	    Score.put("SC", scTop5);
+
+	    List<GameList> msTop5 = gameListRepository.findAllByOrderByMsScoreDesc()
+	            .stream().limit(5).toList();
+	    Score.put("MS", msTop5);
+
+	    return Score;
+	}
+	
+
 }
