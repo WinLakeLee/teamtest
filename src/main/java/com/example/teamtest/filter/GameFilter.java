@@ -24,9 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class GameFilter extends OncePerRequestFilter {
 
 	private final JwtService jwtService;
-	
 	private final int DAILY_LIMIT = 3;
-	
 	private final Map<String, Integer> attempts = new HashMap<>();
 	
 	private static final String PREFIX = "game";

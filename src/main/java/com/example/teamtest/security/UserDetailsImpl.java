@@ -33,6 +33,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User{
 		return userEntity.getUsername();
 	}
 	
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		

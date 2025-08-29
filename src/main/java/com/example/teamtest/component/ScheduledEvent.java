@@ -17,7 +17,7 @@ public class ScheduledEvent {
 	private UserRepository userRepository;
 	
 	@Scheduled(cron = "0 0 0 * * ?")
-	public void DailyEvent() {
+	public void dailyEvent() {
 		List<UserEntity> userList = userRepository.findAll();	
 		userRepository.saveAll(userList.stream().map(user -> {
 				Integer score = user.getDailyScore();
@@ -27,6 +27,11 @@ public class ScheduledEvent {
 				})
 			.collect(Collectors.toList()
 			));
+	}
+	
+	@Scheduled(cron = "0 0 0 * * 1")
+	public void weeklyEvent() {
+		
 	}
 
 }
