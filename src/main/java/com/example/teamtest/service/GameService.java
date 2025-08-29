@@ -80,9 +80,11 @@ public class GameService {
 		    // 문제에서 정답 추출
 		    List<String> answerList = new ArrayList<>();
 		    answerList.add(mainQuiz.getAnswer());
-		    // 정답 리스트에 다른 정답들 추가
+
+		    // 모든 문제 섞기
 		    Collections.shuffle(allQuizzes);
 		    
+		    // 정답 리스트에 다른 정답들 추가
 		    allQuizzes.stream()
 		    	.map(QuizEntity::getAnswer)
 		        .filter(answer -> !answer.equals(mainQuiz.getAnswer()))
@@ -103,10 +105,7 @@ public class GameService {
 	 * @return
 	 */
 	public Integer resolve(Map<?, ?> map) {
-		System.out.println("====================map" + map);
-		// 게임 푼 유저 조회
 		QuizEntity quiz = quizRepository.findById(Long.valueOf((Integer)map.get("id"))).orElseThrow();
-		
 		if(quiz.getAnswer().equals(map.get("answer").toString())) {
 			return Integer.valueOf(quiz.getScore());			
 		} else {
@@ -114,7 +113,7 @@ public class GameService {
 		}
 
 	}
-	
+
 	public Integer result(Map<?, ?> map) {
 		Integer score = (Integer)map.get("score");
 		UserEntity user = userRepository.findByUsername((String)(map.get("username"))).orElseThrow();
@@ -148,7 +147,7 @@ public class GameService {
 		default:
 			return null;
 		}
-		
+
 	}
 
 }
