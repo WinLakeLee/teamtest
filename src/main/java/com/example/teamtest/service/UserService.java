@@ -52,6 +52,12 @@ public class UserService {
 		return userRepository.save(entity);
 	}
 	
+	// 회원정보 조회
+	@Transactional
+	public UserEntity getUser(String username) {
+		return userRepository.findByUsername(username).get();
+	}
+	
 	// 회원정보 수정
 	@Transactional
 	public UserEntity update(String username, UserDTO dto) {

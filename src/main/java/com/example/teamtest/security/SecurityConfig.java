@@ -27,7 +27,7 @@ public class SecurityConfig {
 	
 	@Autowired
 	private JwtFilter jwtFilter;
-	
+  
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
@@ -44,6 +44,7 @@ public class SecurityConfig {
 					.anyRequest()
 						.authenticated()
 					)
+			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			;
 		
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

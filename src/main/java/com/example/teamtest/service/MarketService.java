@@ -3,7 +3,9 @@ package com.example.teamtest.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.teamtest.Repository.MarketRepository;
 import com.example.teamtest.Repository.MyItemRepository;
@@ -13,14 +15,12 @@ import com.example.teamtest.domain.entity.MyItemEntity;
 import com.example.teamtest.domain.entity.UserEntity;
 
 @Service
+@RequiredArgsConstructor
 public class MarketService {
 
-	@Autowired
-	private MarketRepository marketRepository;	
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private MyItemRepository myItemRepository;
+	private final MarketRepository marketRepository;	
+	private final UserRepository userRepository;
+	private final MyItemRepository myItemRepository;
 	
 	public void purchaseItem(Long userId, Long itemId) {
 		UserEntity user = userRepository.findById(userId)
@@ -47,8 +47,5 @@ public class MarketService {
 	public List<MarketEntity> getAllItems() {
 		return marketRepository.findAll();
 	}
-	
-	
-	
 	
 }
