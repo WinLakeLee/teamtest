@@ -38,8 +38,9 @@ public class UserController {
 		return new ResponseEntity<>("회원가입 성공, 유저번호는" + id + "입니다" , HttpStatus.OK);
 	}
 	
+	
 	// 회원정보 수정
-	@PutMapping("update/{id}")
+	@PutMapping("/update")
 	public ResponseEntity<?> updateUser(Authentication auth, @RequestBody UserDTO dto) {
 		UserEntity user = userService.update(auth.getName(), dto);
 		return ResponseEntity.ok(user);

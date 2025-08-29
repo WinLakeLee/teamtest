@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+
 @Configuration
 public class SecurityConfig {
 
@@ -26,10 +27,9 @@ public class SecurityConfig {
 	private final String[] PUBLIC_URIS = {
 			"/login",
 			"/signup",
-			"/quiz/**"
-			
+			"/quiz/**"			
 	};
-
+	
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
@@ -45,7 +45,6 @@ public class SecurityConfig {
 						.permitAll()
 					.anyRequest()
 						.authenticated()
-						
 			)
         	.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class
 			);

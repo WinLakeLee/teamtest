@@ -21,11 +21,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-
-	public UserEntity getUser(String username) {
-		return userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 아이디입니다."));
-
-  }
+  
     
 	public UserEntity insert(UserDTO dto) {
 		
@@ -43,6 +39,12 @@ public class UserService {
 		entity.setPoint(0);
 		
 		return userRepository.save(entity);
+	}
+	
+	// 회원정보 조회
+	@Transactional
+	public UserEntity getUser(String username) {
+		return userRepository.findByUsername(username).get();
 	}
 	
 	// 회원정보 수정
@@ -77,5 +79,6 @@ public class UserService {
 			System.out.println(e.getMessage());
 		}
 	}
+	
 	
 }
