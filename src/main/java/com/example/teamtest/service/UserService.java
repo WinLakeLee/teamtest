@@ -58,12 +58,8 @@ public class UserService {
 		UserEntity findUser = userRepository.findByUsername(username)
 				.orElseThrow(() -> new EntityNotFoundException("해당 ID의 유저가 없습니다."));
 		
-		if (!dto.getPassword().equals(findUser.getPassword())) {
-			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
-		}
-
 		findUser.setNickname(dto.getNickname());
-		findUser.setPassword(dto.getPassword());
+		findUser.setPassword(passwordEncoder.encode(dto.getPassword()));
 
 		return userRepository.save(findUser);
 	}

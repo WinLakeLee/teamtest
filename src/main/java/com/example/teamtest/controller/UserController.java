@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,14 +57,14 @@ public class UserController {
 
         return ResponseEntity.ok(dto);
     }
-
 	
 	// 회원정보 수정
 	@PutMapping("/update")
 	public ResponseEntity<?> updateUser(Authentication auth, @RequestBody UserDTO dto) {
 	    String username = auth.getName();
-	    UserEntity updated = userService.update(username, dto);
-	    return ResponseEntity.ok(updated);
+	    UserEntity update = userService.update(username, dto);
+	    
+	    return ResponseEntity.ok(update);
 	}
 	
 	// 회원탈퇴
@@ -78,7 +77,7 @@ public class UserController {
 			return ResponseEntity.ok("회원탈퇴 완료");
 		else
 			return ResponseEntity.ok("비밀번호 오류");
-	}
+	} 
 	
 	// 로그인
 	@PostMapping("/login")
@@ -89,6 +88,5 @@ public class UserController {
 		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization").build();
 
 	}
-	
 	
 }
