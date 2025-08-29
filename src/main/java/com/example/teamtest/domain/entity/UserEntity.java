@@ -55,7 +55,7 @@ public class UserEntity {
 	@Column
 	private Integer point;
 	
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<MyItemEntity> items;
 	
 }

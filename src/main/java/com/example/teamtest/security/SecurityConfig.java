@@ -23,12 +23,11 @@ public class SecurityConfig {
 	private final String[] PUBLIC_URIS = {
 			"/login",
 			"/signup"
-			
 	};
 	
 	@Autowired
-	JwtFilter jwtFilter;
-
+	private JwtFilter jwtFilter;
+  
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
@@ -47,6 +46,8 @@ public class SecurityConfig {
 					)
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			;
+		
+		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 	
