@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,8 +34,8 @@ public class QuizController {
 	
 	@PostMapping("result")
 	public ResponseEntity<?> result(@RequestBody Map<?, ?> map) {
-		gameService.result(map);
-		return ResponseEntity.ofNullable(null);
+		int score = gameService.result(map);
+		return ResponseEntity.ofNullable(score);
 	}
 	
 }
