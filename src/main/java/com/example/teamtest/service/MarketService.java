@@ -2,10 +2,7 @@ package com.example.teamtest.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.teamtest.Repository.MarketRepository;
 import com.example.teamtest.Repository.MyItemRepository;
@@ -13,6 +10,8 @@ import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.domain.entity.MarketEntity;
 import com.example.teamtest.domain.entity.MyItemEntity;
 import com.example.teamtest.domain.entity.UserEntity;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
