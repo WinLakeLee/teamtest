@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.teamtest.jwt.JwtService;
+import lombok.RequiredArgsConstructor;
+
+import com.example.teamtest.domain.Grade;
+
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
 import com.example.teamtest.jwt.JwtService;
@@ -44,10 +49,13 @@ public class UserController {
         UserEntity user = userService.getUser(auth.getName());
 
         UserDTO dto = UserDTO.builder()
+        		.id(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .password(null)
+                .point(user.getPoint())
+                .grade(Grade.BRONZE)
                 .build();
 
         return ResponseEntity.ok(dto);
