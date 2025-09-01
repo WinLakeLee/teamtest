@@ -12,9 +12,6 @@ import com.example.teamtest.domain.entity.GameList;
 @SpringBootTest
 class TeamtestApplicationTests {
 
-	@Autowired
-	private GameListRepository repository;
-	
 	@Test
 	void contextLoads() {
 
