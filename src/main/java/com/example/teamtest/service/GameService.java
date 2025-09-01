@@ -7,23 +7,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.teamtest.Repository.CategoryRepository;
 import com.example.teamtest.Repository.QuizRepository;
 import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.Repository.GameListRepository;
 import com.example.teamtest.domain.Game;
-import com.example.teamtest.domain.QuestionType;
+
 import com.example.teamtest.domain.DTO.HonorListDTO;
 import com.example.teamtest.domain.DTO.QuizQuestionDTO;
-import com.example.teamtest.domain.DTO.UserDTO;
+import com.example.teamtest.domain.DTO.RankingDTO;
 import com.example.teamtest.domain.entity.CategoryEntity;
 import com.example.teamtest.domain.entity.GameList;
 import com.example.teamtest.domain.entity.QuizEntity;
@@ -145,6 +144,29 @@ public class GameService {
 			 gameListRepository.save(gameList);
 	}
 	
+	// 퀴즈별 점수를 총합
+	@Transactional(readOnly = true)
+	public List<RankingDTO> getTotalScores() {
+	    return gameListRepository.findAll().stream()  
+	            .map(gameList -> {
+	                int total = (gameList.getLolScore() != null ? gameList.getLolScore() : 0)
+	                          + (gameList.getBgScore() != null ? gameList.getBgScore() : 0)
+	                          + (gameList.getScScore() != null ? gameList.getScScore() : 0)
+	                          + (gameList.getMsScore() != null ? gameList.getMsScore() : 0);
+	                
+	                return new RankingDTO(
+	                        gameList.getUser().getNickname(),
+	                        gameList.getLolScore() != null ? gameList.getLolScore() : 0,
+	                        gameList.getBgScore() != null ? gameList.getBgScore() : 0,
+	                        gameList.getScScore() != null ? gameList.getScScore() : 0,
+	                        gameList.getMsScore() != null ? gameList.getMsScore() : 0,
+	                        total
+	                );
+	            })
+	            .sorted((a, b) -> Integer.compare(b.getTotalScore(), a.getTotalScore()))  // 총합 기준 내림차순
+	            .limit(10)  // 상위 10명
+	            .collect(Collectors.toList());
+	}
 	
 
 	// 퀴즈별 점수 5등 까지 내림차순으로 출력
@@ -154,7 +176,7 @@ public class GameService {
 	    List<HonorListDTO> lolTop5 = gameListRepository.findAllByOrderByLolScoreDesc()
 	            .stream()
 	            .limit(5)
-	            .map(g -> new HonorListDTO(g.getUser().getNickname(), g.getLolScore())) // User 엔티티 연관관계
+	            .map(g -> new HonorListDTO(g.getUser().getNickname(), g.getLolScore()))
 	            .toList();
 	    scoreMap.put("LOL", lolTop5);
 
