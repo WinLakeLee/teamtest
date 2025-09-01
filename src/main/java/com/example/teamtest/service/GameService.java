@@ -2,18 +2,27 @@ package com.example.teamtest.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.teamtest.Repository.CategoryRepository;
 import com.example.teamtest.Repository.GameListRepository;
 import com.example.teamtest.Repository.QuizRepository;
 import com.example.teamtest.Repository.UserRepository;
+import com.example.teamtest.Repository.GameListRepository;
+import com.example.teamtest.domain.Game;
+import com.example.teamtest.domain.QuestionType;
+import com.example.teamtest.domain.DTO.HonorListDTO;
 import com.example.teamtest.domain.Game;
 import com.example.teamtest.domain.DTO.QuizQuestionDTO;
+import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.CategoryEntity;
 import com.example.teamtest.domain.entity.GameList;
 import com.example.teamtest.domain.entity.QuizEntity;
@@ -29,6 +38,8 @@ public class GameService {
 	private final QuizRepository quizRepository;
 	private final CategoryRepository categoryRepository;
 	private final GameListRepository gameListRepository;
+	private final UserRepository userRepository;
+	
 	/**
 	 * 문제 수
 	 */
@@ -111,6 +122,68 @@ public class GameService {
 		} else {
 			return 0;			
 		}
+	}
+	
+	// 퀴즈별 점수 저장
+	@Transactional
+	public void addScore(Long userId, String gamename, byte score, UserEntity user) {
+		 GameList gameList = gameListRepository.findById(userId).orElse(new GameList(userId, user, 0, 0, 0, 0));
+		 
+			 
+			 switch (gamename.toUpperCase()) {
+			 case "LOL":
+				 gameList.setLolScore(gameList.getLolScore() + score);
+				 break;
+			 case "BG":
+				 gameList.setBgScore(gameList.getBgScore() + score);
+				 break;
+			 case "SC":
+				 gameList.setScScore(gameList.getScScore() + score);
+				 break;
+			 case "MS":
+				 gameList.setMsScore(gameList.getMsScore() + score);
+				 break;
+			 default:
+				 break;
+			 
+		 }
+     // DB에 저장 (insert 또는 update)
+			 gameListRepository.save(gameList);
+	}
+	
+	// 퀴즈별 점수 5등 까지 내림차순으로 출력
+	public Map<String, List<HonorListDTO>> getScore() {
+	    Map<String, List<HonorListDTO>> scoreMap = new HashMap<>();
+
+	    List<HonorListDTO> lolTop5 = gameListRepository.findAllByOrderByLolScoreDesc()
+	            .stream()
+	            .limit(5)
+	            .map(g -> new HonorListDTO(g.getUser().getNickname(), g.getLolScore())) // User 엔티티 연관관계
+	            .toList();
+	    scoreMap.put("LOL", lolTop5);
+
+	    List<HonorListDTO> bgTop5 = gameListRepository.findAllByOrderByBgScoreDesc()
+	            .stream()
+	            .limit(5)
+	            .map(g -> new HonorListDTO(g.getUser().getNickname(), g.getBgScore()))
+	            .toList();
+	    scoreMap.put("BG", bgTop5);
+
+	    List<HonorListDTO> scTop5 = gameListRepository.findAllByOrderByScScoreDesc()
+	            .stream()
+	            .limit(5)
+	            .map(g -> new HonorListDTO(g.getUser().getNickname(), g.getScScore()))
+	            .toList();
+	    scoreMap.put("SC", scTop5);
+
+	    List<HonorListDTO> msTop5 = gameListRepository.findAllByOrderByMsScoreDesc()
+	            .stream()
+	            .limit(5)
+	            .map(g -> new HonorListDTO(g.getUser().getNickname(), g.getMsScore()))
+	            .toList();
+	    scoreMap.put("MS", msTop5);
+
+	    return scoreMap;
 	}
 
 	public Integer result(Map<?, ?> map) {
