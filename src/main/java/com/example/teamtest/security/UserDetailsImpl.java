@@ -23,6 +23,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User{
 	private UserEntity userEntity;
 	
 	private Map<String, Object> attributes;
+	
 	@Override
 	public Map<String, Object> getAttributes() {
 		return null;
@@ -31,6 +32,7 @@ public class UserDetailsImpl implements UserDetails, OAuth2User{
 	public String getName() {
 		return userEntity.getUsername();
 	}
+	
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

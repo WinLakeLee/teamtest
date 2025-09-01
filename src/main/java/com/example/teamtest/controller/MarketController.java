@@ -66,8 +66,7 @@ public class MarketController {
 	
 		return ResponseEntity.ok(myItems);
 	}
-	
-	
+
 	// 환불
 	@PostMapping("my/refund/{myItemId}")
 	public ResponseEntity<?> refundItem(@PathVariable Long myItemId) {
@@ -85,8 +84,5 @@ public class MarketController {
 	        return ResponseEntity.badRequest().body(e.getMessage());
 	    }
 	}
-	
-	
-	
 	
 }
