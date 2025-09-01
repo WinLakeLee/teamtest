@@ -32,7 +32,7 @@ public class GameService {
 	/**
 	 * 문제 수
 	 */
-	private static final Integer QUIZ_AMOUNT = 30;
+	private static final Integer QUIZ_AMOUNT = 50;
 	/**
 	 * 문제 생성
 	 * @param game 문제를 출제해야 할 게임 이름 
