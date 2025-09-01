@@ -1,22 +1,29 @@
 package com.example.teamtest.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.teamtest.Repository.CategoryRepository;
+import com.example.teamtest.Repository.GameListRepository;
 import com.example.teamtest.Repository.QuizRepository;
+import com.example.teamtest.Repository.RankRepository;
+import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.domain.Game;
-import com.example.teamtest.domain.QuestionType;
+
+import com.example.teamtest.domain.DTO.HonorListDTO;
 import com.example.teamtest.domain.DTO.QuizQuestionDTO;
+import com.example.teamtest.domain.DTO.RankingDTO;
 import com.example.teamtest.domain.entity.CategoryEntity;
+import com.example.teamtest.domain.entity.GameList;
 import com.example.teamtest.domain.entity.QuizEntity;
+import com.example.teamtest.domain.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,83 +31,178 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GameService {
 
+	private final UserRepository userRepository;
 	private final QuizRepository quizRepository;
 	private final CategoryRepository categoryRepository;
+	private final GameListRepository gameListRepository;
+	private final RankRepository rankRepository;
+
 	/**
-	 * 랜덤
+	 * 문제 수
 	 */
-	private Random random;
+	private static final Integer QUIZ_AMOUNT = 50;
+
 	/**
+	 * 문제 생성
 	 * 
-	 * @param map 
-	 * @return
+	 * @param game     문제를 출제해야 할 게임 이름
+	 * @param username 문제를 푼 사람
+	 * @return 문제 리스트
 	 */
-	public QuizQuestionDTO generateQuiz(String game) {
+	public List<QuizQuestionDTO> generateQuiz(String game) {
 
-	    QuizQuestionDTO dto = new QuizQuestionDTO();
-	    
-	    // Convert to a mutable list
-	    List<CategoryEntity> categoryList = categoryRepository.findAll();
-	    
-	    CategoryEntity category = categoryList.stream()
-	            .filter(c -> c.getGamename().equals(Enum.valueOf(Game.class, game)))
-	            .findFirst()
-	            .orElse(null);
+		List<Long> answeredQuizIds = new ArrayList<>();
+		List<QuizQuestionDTO> quizList = new ArrayList<>();
 
-	    if (category == null) {
-	    	return null;
-	    }
+		for (int i = 0; i < QUIZ_AMOUNT; i++) {
+			QuizQuestionDTO dto = new QuizQuestionDTO();
 
-	    // Find a random quiz question from the selected category
-	    QuizEntity mainQuiz = quizRepository.findSomeOneByCategory(category.getCategoryId());
+			// 전체 카테고리 조회
+			CategoryEntity category = categoryRepository.findAll().stream()
+					.filter(c -> c.getGamename().equals(Enum.valueOf(Game.class, game)))
+					.findAny()
+					.orElse(null);
 
-	    if (mainQuiz == null) {
-	        return null;
-	    }
+			// 카테고리의 전체 문제 조회
+			List<QuizEntity> allQuizzes = quizRepository.findAllByCategory(category);
 
-	    dto.setQuizId(mainQuiz.getQuizId());
-	    dto.setQuestion(mainQuiz.getQuestion());
-	    dto.setScore(Integer.valueOf(mainQuiz.getScore()));
+			// 안 나온 문제 추출
+			List<QuizEntity> newQuizzes = allQuizzes.stream()
+					.filter(quiz -> !answeredQuizIds.contains(quiz.getQuizId())).collect(Collectors.toList());
 
-	    // Create a list for the answers, starting with the correct one
-	    List<String> answerList = new ArrayList<>();
-	    answerList.add(mainQuiz.getAnswer());
+			// 안 나온 문제 섞기
+			Collections.shuffle(newQuizzes);
 
-	    // Get a list of ALL answers from the SAME category, excluding the correct one
-	    List<String> otherAnswers = 
-	        quizRepository.findAllByCategory(mainQuiz.getCategory()).stream()
-	            .map(QuizEntity::getAnswer)
-	            .filter(answer -> !answer.equals(mainQuiz.getAnswer()))
-	            .collect(Collectors.toList());
-	    
-	    // Shuffle the other answers to pick three random incorrect ones
-	    Collections.shuffle(otherAnswers);
-	    
-	    // Add the first three incorrect answers to our answer list
-	    otherAnswers.stream()
-	        .limit(3)
-	        .forEach(answerList::add);
+			// 문제에 안 나온 문제 중 하나 추가
+			QuizEntity mainQuiz = newQuizzes.stream().findAny().orElse(null);
 
-	    // Shuffle the final list to mix the correct and incorrect answers
-	    Collections.shuffle(answerList);
-	    
-	    dto.setAnswer(answerList);
-	    return dto;
+			// 이미 나온 문제에 출제 된 문제 추가
+			answeredQuizIds.add(mainQuiz.getQuizId());
+
+			// 문제 리스트에 퀴즈 아이디, 문제 추가
+			dto.setQuizId(mainQuiz.getQuizId());
+			dto.setQuestion(mainQuiz.getQuestion());
+			dto.setPoint(Integer.valueOf(mainQuiz.getScore()));
+
+			// 문제에서 정답 추출
+			List<String> answerList = new ArrayList<>();
+			answerList.add(mainQuiz.getAnswer());
+
+			// 모든 문제 섞기
+			Collections.shuffle(allQuizzes);
+
+			// 정답 리스트에 다른 정답들 추가
+			allQuizzes.stream().map(QuizEntity::getAnswer)
+					.filter(answer -> !answer.equals(mainQuiz.getAnswer()))
+					.limit(3)
+					.forEach(answerList::add);
+
+			// 정답 리스트 섞기
+			Collections.shuffle(answerList);
+			dto.setAnswer(answerList);
+
+			quizList.add(dto);
+		}
+		return quizList;
 	}
+
 	/**
+	 * 문제 푼 결과
 	 * 
 	 * @param map id, answer 받아옴
 	 * @return
 	 */
-	public boolean resolve(Map<?, ?> map) {
-		// 받아온 아이디로 퀴즈 조회
-		QuizEntity quiz = quizRepository.findById((Long)map.get("id")).orElseThrow();
-		// 정답을 맞출 시 true 반환
-		if(quiz.getAnswer().equals(map.get("answer"))) {
-			return true;
+	public Integer resolve(Map<?, ?> map) {
+		QuizEntity quiz = quizRepository.findById(Long.valueOf((Integer) map.get("id"))).orElseThrow();
+		if (quiz.getAnswer().equals(map.get("answer").toString())) {
+			return Integer.valueOf(quiz.getScore());
 		} else {
-		// 정답을 틀리거나 없을 시 false 반환
-			return false;
+			return 0;
+		}
+	}
+
+	// 퀴즈별 점수를 총합
+	@Transactional(readOnly = true)
+	public List<RankingDTO> getTotalScores() {
+		return rankRepository.findAll().stream().map(rank -> {
+			Integer sum = (rank.getLolScore() != null ? rank.getLolScore() : 0)
+					+ (rank.getBgScore() != null ? rank.getBgScore() : 0)
+					+ (rank.getScScore() != null ? rank.getScScore() : 0)
+					+ (rank.getMsScore() != null ? rank.getMsScore() : 0);
+			return new RankingDTO(rank.getUser().getNickname(), 
+					rank.getLolScore() != null ? rank.getLolScore() : 0,
+					rank.getBgScore() != null ? rank.getBgScore() : 0,
+					rank.getScScore() != null ? rank.getScScore() : 0,
+					rank.getMsScore() != null ? rank.getMsScore() : 0, sum);
+		}).sorted((a, b) -> Integer.compare(b.getTotalScore(), a.getTotalScore())) // 총합 기준 내림차순
+				.limit(10) // 상위 10명
+				.collect(Collectors.toList());
+	}
+
+	// 퀴즈별 점수 5등 까지 내림차순으로 출력
+	public Map<String, List<HonorListDTO>> getScore() {
+		Map<String, List<HonorListDTO>> scoreMap = new HashMap<>();
+
+		List<HonorListDTO> lolTop5 = rankRepository.findAllByOrderByLolScoreDesc().stream().limit(5)
+				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getLolScore())).toList();
+		scoreMap.put("LOL", lolTop5);
+
+		List<HonorListDTO> bgTop5 = rankRepository.findAllByOrderByBgScoreDesc().stream().limit(5)
+				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getBgScore())).toList();
+		scoreMap.put("BG", bgTop5);
+
+		List<HonorListDTO> scTop5 = rankRepository.findAllByOrderByScScoreDesc().stream().limit(5)
+				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getScScore())).toList();
+		scoreMap.put("SC", scTop5);
+
+		List<HonorListDTO> msTop5 = rankRepository.findAllByOrderByMsScoreDesc().stream().limit(5)
+				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getMsScore())).toList();
+		scoreMap.put("MS", msTop5);
+
+		return scoreMap;
+	}
+
+	@Transactional
+	public Integer result(Map<?, ?> map) {
+		Integer score = (Integer) map.get("score");
+		System.out.println(score);
+		UserEntity user = userRepository.findByUsername((String) (map.get("username"))).orElseThrow();
+		System.out.println(user);
+		GameList gameList = gameListRepository.findById(user.getId())
+				.orElseGet(() -> new GameList(user.getId(), 0, 0, 0, 0, 0, 0, 0, 0));
+		System.out.println(gameList);
+		switch ((String) map.get("game")) {
+		case "lol":
+			gameList.setLolWeeklyScore(gameList.getLolWeeklyScore() + score);
+			if (gameList.getLolMaxScore() < score) {
+				gameList.setLolMaxScore(score);
+			}
+			gameListRepository.save(gameList);
+			return score;
+		case "ms":
+			gameList.setMsWeeklyScore(gameList.getMsWeeklyScore() + score);
+			if (gameList.getMsMaxScore() < score) {
+				gameList.setMsMaxScore(score);
+			}
+			gameListRepository.save(gameList);
+			return score;
+		case "bg":
+			gameList.setBgWeeklyScore(gameList.getBgWeeklyScore() + score);
+			if (gameList.getBgMaxScore() < score) {
+				gameList.setBgMaxScore(score);
+			}
+			gameListRepository.save(gameList);
+			return score;
+		case "sc":
+			gameList.setScWeeklyScore(gameList.getScWeeklyScore() + score);
+			if (gameList.getScMaxScore() < score) {
+				gameList.setScMaxScore(score);
+			}
+			gameListRepository.save(gameList);
+			return score;
+
+		default:
+			return null;
 		}
 	}
 }

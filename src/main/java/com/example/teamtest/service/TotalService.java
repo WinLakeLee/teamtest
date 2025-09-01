@@ -1,9 +1,23 @@
 package com.example.teamtest.service;
 
 import java.util.Random;
+import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Service;
+
+import com.example.teamtest.Repository.GameListRepository;
+import com.example.teamtest.Repository.UserRepository;
+import com.example.teamtest.domain.entity.GameList;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
 public class TotalService {
-
+	
+	private final GameListRepository gameListRepository;
+	private final UserRepository userRepository;
+	
 	private static final String[] PW_WORDS = {
 		    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
 		    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
@@ -21,4 +35,23 @@ public class TotalService {
 		}
 		return sb.toString();
 	}
+
+	public void calculation() {
+		gameListRepository.findAll()
+		.stream()
+		.collect(Collectors.groupingBy(GameList::getUserId, 
+					Collectors.summingInt(GameList::sum)))
+		.forEach(
+			(userId, sum) -> userRepository
+				.findById(userId)
+				.stream()
+				.map(entity -> {
+					entity.setPoint(entity.getPoint() + sum);
+					entity.setLastWeekScore(sum);
+					entity.setTotalScore(entity.getTotalScore() + sum);
+					return userRepository.save(entity);
+					})
+		.close());
+	}
+
 }
