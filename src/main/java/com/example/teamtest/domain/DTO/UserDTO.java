@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
+	
+	@NotNull
+	private Long id;
 
 	@NotNull(message = "이름을 입력해 주세요")
 	@NotBlank(message = "띄어쓰기는 안됩니다")
