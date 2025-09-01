@@ -23,7 +23,9 @@ public class OAuth2UserDetailsServiceImpl extends DefaultOAuth2UserService{
 	
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+		
 		OAuth2User oAuth2User = super.loadUser(userRequest);
+		
 		Map<String, String> map = new HashMap<>();
 		map.put("id", oAuth2User.getAttribute("sub"));
 		map.put("email", oAuth2User.getAttribute("sub"));

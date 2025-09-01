@@ -16,4 +16,3 @@ public interface GameListRepository extends JpaRepository<GameList, Long> {
 	List<GameList> findAllByOrderByBgScoreDesc();
 	List<GameList> findAllByOrderByScScoreDesc();
 	List<GameList> findAllByOrderByMsScoreDesc();
-}

@@ -1,13 +1,11 @@
 package com.example.teamtest.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +31,7 @@ public class UserController {
 	private final AuthenticationManager authenticationManager;
 
 	// 회원가입
-	@PostMapping("/signup")
+	@PostMapping("signup")
 	public ResponseEntity<?> signup (@RequestBody UserDTO user) {
 		System.out.println(user.toString());
 		Long id = userService.insert(user).getId();
@@ -47,7 +45,6 @@ public class UserController {
         UserEntity user = userService.getUser(auth.getName());
 
         UserDTO dto = UserDTO.builder()
-                .id(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
@@ -69,7 +66,6 @@ public class UserController {
 	// 회원탈퇴
 	@DeleteMapping("/delete")
 	public ResponseEntity<?> deleteUser(Authentication auth, @RequestParam String password) {
-		UserEntity user = userRepository.findByUsername(auth.getName()).get();
 		boolean result = userService.delete(auth, password);
 		
 		if(result)
@@ -79,12 +75,15 @@ public class UserController {
 	} 
 	
 	// 로그인
-	@PostMapping("/login")
+	@PostMapping("login")
 	public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
 		UsernamePasswordAuthenticationToken cred = new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword());
 		Authentication auth = authenticationManager.authenticate(cred);
 		String jwt = jwtService.createToken(auth.getName(), auth.getAuthorities());
-		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization").build();
+		return ResponseEntity.ok()
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+				.header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization")
+				.build();
 
 	}
 	

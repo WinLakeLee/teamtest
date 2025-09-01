@@ -30,5 +30,4 @@ public class MyItemEntity {
 	@JoinColumn(name = "item_id")
 	private MarketEntity item;
 	
-	
 }

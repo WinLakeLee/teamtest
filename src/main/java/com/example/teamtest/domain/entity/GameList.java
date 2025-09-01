@@ -7,10 +7,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// 최고 점수
 @Data
 @Entity
 @Table(name = "game_list")
@@ -37,4 +39,3 @@ public class GameList {
     @Column
     private Integer msScore;
 }
-
