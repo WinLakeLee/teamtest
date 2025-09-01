@@ -111,7 +111,6 @@ public class GameService {
 		} else {
 			return 0;			
 		}
-
 	}
 
 	public Integer result(Map<?, ?> map) {
@@ -125,10 +124,10 @@ public class GameService {
 				gameList.setLolMaxScore(score);
 			}
 			return score;
-		case "loa":
-			gameList.setLoaWeeklyScore(gameList.getLoaWeeklyScore()+score);
-			if(gameList.getLoaMaxScore() < score) {
-				gameList.setLoaMaxScore(score);
+		case "ms":
+			gameList.setMsWeeklyScore(gameList.getMsWeeklyScore()+score);
+			if(gameList.getMsMaxScore() < score) {
+				gameList.setMsMaxScore(score);
 			}
 			return score;
 		case "bg":
