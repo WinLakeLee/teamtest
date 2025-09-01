@@ -7,8 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-import com.example.teamtest.domain.entity.GameList;
+import com.example.teamtest.domain.DTO.HonorListDTO;
 import com.example.teamtest.service.GameService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,8 +19,8 @@ public class GameController {
 	private final GameService gameService;
 
 	@GetMapping("/honor")
-	public ResponseEntity<Map<String, List<GameList>>> getTopScores() {
-		System.out.println("sada");
+	public ResponseEntity<Map<String, List<HonorListDTO>>> getTopScores() {
+		
 	    return ResponseEntity.ok(gameService.getScore());
 	}
 }
