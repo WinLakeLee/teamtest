@@ -48,7 +48,6 @@ public class UserController {
         UserEntity user = userService.getUser(auth.getName());
 
         UserDTO dto = UserDTO.builder()
-                .id(user.getId())
                 .username(user.getUsername())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
