@@ -2,12 +2,8 @@ package com.example.teamtest.domain.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,22 +16,35 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GameList {
 
-    @Id
-    private Long userId;
-    
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "userId", insertable = false, updatable = false)
-    private UserEntity user;
-    
-    @Column
-    private Integer lolScore;
+	@Id
+	private Long userId;
+	
+	@Column
+	private Integer lolWeeklyScore;
+	
+	@Column
+	private Integer lolMaxScore;
+	
+	@Column
+	private Integer bgWeeklyScore;
+	
+	@Column
+	private Integer bgMaxScore;
+	
+	@Column
+	private Integer scWeeklyScore;
+	
+	@Column
+	private Integer scMaxScore;
+	
+	@Column
+	private Integer msWeeklyScore;
 
-    @Column
-    private Integer bgScore;
-
-    @Column
-    private Integer scScore;
-
-    @Column
-    private Integer msScore;
+	@Column
+	private Integer msMaxScore;
+	
+	public Integer sum() {
+		return this.getBgWeeklyScore() + this.getMsWeeklyScore() + this.getLolWeeklyScore() + this.getBgWeeklyScore();
+	}
+	
 }
