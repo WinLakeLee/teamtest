@@ -2,6 +2,8 @@ package com.example.teamtest.security;
 
 import java.util.List;
 
+import com.example.teamtest.jwt.JwtFilter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,39 +17,37 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.example.teamtest.jwt.JwtFilter;
 
 @Configuration
 public class SecurityConfig {
+
+	@Autowired
+    private JwtFilter jwtFilter;
 	
 	private final String[] PUBLIC_URIS = {
 			"/login",
-			"/signup"
+			"/signup",
+			"/quiz/**"			
 	};
 	
-	@Autowired
-	private JwtFilter jwtFilter;
-  
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 			.cors(cors -> cors
 					.configurationSource(configurationSource()
 							)
-					)	
+			)	
 			.csrf(csrf -> csrf
 				.disable()
-				)
+			)
 			.authorizeHttpRequests(authorize -> authorize
 					.requestMatchers(PUBLIC_URIS)
 						.permitAll()
 					.anyRequest()
 						.authenticated()
-					)
-			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-			;
-		
-		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+			)
+        	.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class
+			);
 		return http.build();
 	}
 	
