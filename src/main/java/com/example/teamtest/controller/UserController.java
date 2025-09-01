@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.teamtest.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 
+import com.example.teamtest.domain.Grade;
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
 import com.example.teamtest.service.UserService;
@@ -52,6 +53,7 @@ public class UserController {
                 .email(user.getEmail())
                 .password(null)
                 .point(user.getPoint())
+                .grade(Grade.BRONZE)
                 .build();
 
         return ResponseEntity.ok(dto);

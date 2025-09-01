@@ -3,6 +3,7 @@ package com.example.teamtest.domain.DTO;
 
 import java.util.List;
 
+import com.example.teamtest.domain.Grade;
 import com.example.teamtest.domain.entity.UserEntity;
 
 import jakarta.validation.constraints.Email;
@@ -45,5 +46,8 @@ public class UserDTO {
 	
 	@NotNull
 	private int point;
+	
+	@NotNull
+	private Grade grade;
 
 }

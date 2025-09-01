@@ -11,22 +11,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.teamtest.Repository.MarketRepository;
 import com.example.teamtest.Repository.MyItemRepository;
 import com.example.teamtest.Repository.UserRepository;
+import com.example.teamtest.domain.Grade;
+import com.example.teamtest.domain.ItemCategory;
+import com.example.teamtest.domain.entity.MarketEntity;
 import com.example.teamtest.domain.entity.MyItemEntity;
 import com.example.teamtest.domain.entity.UserEntity;
 import com.example.teamtest.service.MarketService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/market")
 public class MarketController {
 	
-	@Autowired
-	private MarketService marketService;
-	@Autowired
-	private MyItemRepository myItemRepository;
-	@Autowired
-	private UserRepository userRepository;
+	private final MarketService marketService;
+	private final MyItemRepository myItemRepository;
+	private final UserRepository userRepository;
+	private final MarketRepository marketRepository;
 
 	@GetMapping // 아이템 목록 조회
 	public ResponseEntity<?> getItems() {
@@ -87,7 +92,26 @@ public class MarketController {
 	    }
 	}
 	
-	
-	
-	
+	// 등급 업데이트
+	@PostMapping("use/{userId}/{itemId}") 
+	public ResponseEntity<?> useGrade(@PathVariable Long userId, @PathVariable Long itemId) {
+		UserEntity user = userRepository.findById(userId)
+				.orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다"));
+		
+		MarketEntity item = marketRepository.findById(itemId)
+				.orElseThrow(() -> new RuntimeException("아이템을 찾을 수 없습니다"));
+		
+		// GRADE 아이템 사용시
+		if(item.getItemCategory() == ItemCategory.GRADE) {
+			// GRADE 아이템이면 UserEntity.grade 업데이트
+			user.setGrade(item.getItemGrade());
+	    }  
+		// IMAGE 아이템이면 effectImage 적용
+		if(item.getItemCategory() == ItemCategory.IMAGE) {
+			user.setNicknameBg(item.getEffectImage());
+	    }
+		userRepository.save(user);
+		
+		return ResponseEntity.ok(user);
+	}
 }

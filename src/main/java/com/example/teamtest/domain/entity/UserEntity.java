@@ -58,4 +58,6 @@ public class UserEntity {
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<MyItemEntity> items;
 	
+	@Column
+	private String nicknameBg;
 }

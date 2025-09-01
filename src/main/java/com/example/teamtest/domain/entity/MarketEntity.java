@@ -1,5 +1,6 @@
 package com.example.teamtest.domain.entity;
 
+import com.example.teamtest.domain.Grade;
 import com.example.teamtest.domain.ItemCategory;
 
 import jakarta.persistence.Column;
@@ -35,14 +36,19 @@ public class MarketEntity {
 	@Enumerated(EnumType.STRING)
 	private ItemCategory itemCategory;
 	
-	private String effectClass;
+	@Column
+	@Enumerated(EnumType.STRING)
+	private Grade itemGrade;
 	
-	public MarketEntity(Long id, String itemName, int itemPrice, ItemCategory category, String effect) {
+	private String effectImage;
+	
+	public MarketEntity(Long id, String itemName, int itemPrice, ItemCategory category, Grade itemGrade, String effectImage) {
         this.itemId = id;
         this.itemName = itemName;
         this.itemPrice = itemPrice;
         this.itemCategory = category;
-        this.effectClass = effect;
+        this.itemGrade = itemGrade;
+        this.effectImage = effectImage;
     }
 	
 }
