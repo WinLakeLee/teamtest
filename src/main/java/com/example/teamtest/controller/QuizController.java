@@ -34,6 +34,7 @@ public class QuizController {
 	
 	@PostMapping("result")
 	public ResponseEntity<?> result(@RequestBody Map<?, ?> map) {
+		System.out.println(map);
 		int score = gameService.result(map);
 		return ResponseEntity.ofNullable(score);
 	}

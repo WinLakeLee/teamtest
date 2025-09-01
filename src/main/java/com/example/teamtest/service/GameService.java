@@ -115,32 +115,39 @@ public class GameService {
 
 	public Integer result(Map<?, ?> map) {
 		Integer score = (Integer)map.get("score");
+		System.out.println(score);
 		UserEntity user = userRepository.findByUsername((String)(map.get("username"))).orElseThrow();
-		GameList gameList = gameListRepository.findById(user.getId()).orElseThrow();
+		System.out.println(user);
+		GameList gameList = gameListRepository.findById(user.getId()).orElseGet(() -> new GameList(user.getId(), 0, 0, 0, 0, 0, 0, 0, 0));
+		System.out.println(gameList);
 		switch ((String)map.get("game")) {
 		case "lol":
 			gameList.setLolWeeklyScore(gameList.getLolWeeklyScore()+score);
 			if(gameList.getLolMaxScore() < score) {
 				gameList.setLolMaxScore(score);
 			}
+			gameListRepository.save(gameList);
 			return score;
 		case "ms":
 			gameList.setMsWeeklyScore(gameList.getMsWeeklyScore()+score);
 			if(gameList.getMsMaxScore() < score) {
 				gameList.setMsMaxScore(score);
 			}
+			gameListRepository.save(gameList);
 			return score;
 		case "bg":
 			gameList.setBgWeeklyScore(gameList.getBgWeeklyScore()+score);
 			if(gameList.getBgMaxScore() < score) {
 				gameList.setBgMaxScore(score);
 			}
+			gameListRepository.save(gameList);
 			return score;
 		case "sc":
 			gameList.setScWeeklyScore(gameList.getScWeeklyScore()+score);
 			if(gameList.getScMaxScore() < score) {
 				gameList.setScMaxScore(score);
 			}
+			gameListRepository.save(gameList);
 			return score;
 
 		default:
