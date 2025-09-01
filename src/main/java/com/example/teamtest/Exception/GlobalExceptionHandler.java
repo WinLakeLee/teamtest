@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-//	@ExceptionHandler(Exception.class)
-//	public String globalExceptionHandler(Exception e) {
-//		return e.getMessage();
-//	}
+	@ExceptionHandler(Exception.class)
+	public String globalExceptionHandler(Exception e) {
+		return e.getMessage();
+	}
 	
 }
