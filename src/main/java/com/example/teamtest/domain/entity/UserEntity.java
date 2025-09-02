@@ -76,4 +76,6 @@ public class UserEntity {
 	@Enumerated(EnumType.STRING)
 	private OAuthType oAuthType;
 	
+	@Column
+	private String nicknameBg;
 }
