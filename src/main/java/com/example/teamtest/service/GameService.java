@@ -25,6 +25,7 @@ import com.example.teamtest.domain.entity.GameList;
 import com.example.teamtest.domain.entity.QuizEntity;
 import com.example.teamtest.domain.entity.UserEntity;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -50,60 +51,69 @@ public class GameService {
 	 * @return 문제 리스트
 	 */
 	public List<QuizQuestionDTO> generateQuiz(String game) {
-
+		
 		List<Long> answeredQuizIds = new ArrayList<>();
 		List<QuizQuestionDTO> quizList = new ArrayList<>();
 
-		for (int i = 0; i < QUIZ_AMOUNT; i++) {
-			QuizQuestionDTO dto = new QuizQuestionDTO();
+		try {
+			for (int i = 0; i < QUIZ_AMOUNT; i++) {
+				QuizQuestionDTO dto = new QuizQuestionDTO();
 
-			// 전체 카테고리 조회
-			CategoryEntity category = categoryRepository.findAll().stream()
-					.filter(c -> c.getGamename().equals(Enum.valueOf(Game.class, game)))
-					.findAny()
-					.orElse(null);
+				// 전체 카테고리 조회
+				CategoryEntity category = categoryRepository.findAll().stream()
+						.filter(c -> c.getGamename().equals(Enum.valueOf(Game.class, game)))
+						.findAny()
+						.orElseThrow(() -> new EntityNotFoundException("게임 카테고리가 존재하지 않습니다"));
+				
+				// 카테고리의 전체 문제 조회
+				List<QuizEntity> allQuizzes = quizRepository.findAllByCategory(category);
 
-			// 카테고리의 전체 문제 조회
-			List<QuizEntity> allQuizzes = quizRepository.findAllByCategory(category);
+				// 안 나온 문제 추출
+				List<QuizEntity> newQuizzes = allQuizzes.stream()
+						.filter(quiz -> !answeredQuizIds.contains(quiz.getQuizId()))
+						.collect(Collectors.toList());
 
-			// 안 나온 문제 추출
-			List<QuizEntity> newQuizzes = allQuizzes.stream()
-					.filter(quiz -> !answeredQuizIds.contains(quiz.getQuizId())).collect(Collectors.toList());
+				// 안 나온 문제 섞기
+				Collections.shuffle(newQuizzes);
 
-			// 안 나온 문제 섞기
-			Collections.shuffle(newQuizzes);
+				// 문제에 안 나온 문제 중 하나 추가
+				QuizEntity mainQuiz = newQuizzes.stream().findAny().orElse(null);
 
-			// 문제에 안 나온 문제 중 하나 추가
-			QuizEntity mainQuiz = newQuizzes.stream().findAny().orElse(null);
+				// 이미 나온 문제에 출제 된 문제 추가
+				answeredQuizIds.add(mainQuiz.getQuizId());
 
-			// 이미 나온 문제에 출제 된 문제 추가
-			answeredQuizIds.add(mainQuiz.getQuizId());
+				// 문제 리스트에 퀴즈 아이디, 문제 추가
+				dto.setQuizId(mainQuiz.getQuizId());
+				dto.setQuestion(mainQuiz.getQuestion());
+				dto.setPoint(Integer.valueOf(mainQuiz.getScore()));
 
-			// 문제 리스트에 퀴즈 아이디, 문제 추가
-			dto.setQuizId(mainQuiz.getQuizId());
-			dto.setQuestion(mainQuiz.getQuestion());
-			dto.setPoint(Integer.valueOf(mainQuiz.getScore()));
+				// 문제에서 정답 추출
+				List<String> answerList = new ArrayList<>();
+				answerList.add(mainQuiz.getAnswer());
 
-			// 문제에서 정답 추출
-			List<String> answerList = new ArrayList<>();
-			answerList.add(mainQuiz.getAnswer());
+				// 모든 문제 섞기
+				Collections.shuffle(allQuizzes);
 
-			// 모든 문제 섞기
-			Collections.shuffle(allQuizzes);
+				// 정답 리스트에 다른 정답들 추가
+				allQuizzes.stream().map(QuizEntity::getAnswer)
+						.filter(answer -> !answer.equals(mainQuiz.getAnswer()))
+						.limit(3)
+						.forEach(answerList::add);
 
-			// 정답 리스트에 다른 정답들 추가
-			allQuizzes.stream().map(QuizEntity::getAnswer)
-					.filter(answer -> !answer.equals(mainQuiz.getAnswer()))
-					.limit(3)
-					.forEach(answerList::add);
+				// 정답 리스트 섞기
+				Collections.shuffle(answerList);
+				dto.setAnswer(answerList);
 
-			// 정답 리스트 섞기
-			Collections.shuffle(answerList);
-			dto.setAnswer(answerList);
-
-			quizList.add(dto);
+				quizList.add(dto);
+			}
+			return quizList;
+		} catch (EntityNotFoundException e) {
+			e.getStackTrace();
+			return null;
+		} catch (Exception e) {
+			e.getStackTrace();
+			return null;
 		}
-		return quizList;
 	}
 
 	/**

@@ -2,6 +2,7 @@ package com.example.teamtest.security;
 
 import java.util.List;
 
+import com.example.teamtest.filter.GameFilter;
 import com.example.teamtest.jwt.JwtFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class SecurityConfig {
 
 	@Autowired
     private JwtFilter jwtFilter;
+	
+	@Autowired
+	private GameFilter gameFilter;
 	
 	private final String[] PUBLIC_URIS = {
 			"/login",
@@ -47,6 +51,8 @@ public class SecurityConfig {
 						.authenticated()
 			)
         	.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class
+			)
+        	.addFilterAfter(gameFilter, UsernamePasswordAuthenticationFilter.class
 			);
 		return http.build();
 	}

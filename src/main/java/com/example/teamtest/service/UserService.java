@@ -8,9 +8,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.EnumType;
 import jakarta.transaction.Transactional;
 
 import com.example.teamtest.domain.Grade;
+import com.example.teamtest.domain.OAuthType;
 import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
@@ -39,6 +41,7 @@ public class UserService {
 		entity.setGrade(Grade.BRONZE);
 		entity.setCount(0);
 		entity.setPoint(0);
+		entity.setOAuthType(OAuthType.BOARD);
 
 		return userRepository.save(entity);
 	}

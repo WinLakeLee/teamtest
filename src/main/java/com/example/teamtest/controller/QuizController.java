@@ -21,6 +21,7 @@ public class QuizController {
 	
 	@PostMapping("{game}")
 	public ResponseEntity<?> generateQuiz(@PathVariable String game) {
+		System.out.println(game);
 		return ResponseEntity.ok(gameService.generateQuiz(game.toUpperCase()));
 	}
 	
