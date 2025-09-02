@@ -2,7 +2,9 @@ package com.example.teamtest.security;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,8 +28,10 @@ public class UserDetailsImpl implements UserDetails, OAuth2User{
 	
 	@Override
 	public Map<String, Object> getAttributes() {
-		return null;
+			attributes.put("Grade", userEntity.getGrade().toString());
+			return attributes;
 	}
+	
 	@Override
 	public String getName() {
 		return userEntity.getUsername();
@@ -39,37 +43,45 @@ public class UserDetailsImpl implements UserDetails, OAuth2User{
 		
 		return Collections.singletonList(
 				new SimpleGrantedAuthority(
-						"ROLE_" + userEntity.getGrade()
+						userEntity.getGrade().toString()
 						)
 				);
 	}
+	
 	@Override
 	public String getPassword() {
 		return userEntity.getPassword();
 	}
+	
 	@Override
 	public String getUsername() {
 		return userEntity.getUsername();
 	}
+	
 	@Override
 	public boolean isAccountNonExpired() {
 		return true;
 	}
+	
 	@Override
 	public boolean isAccountNonLocked() {
 		return true;
 	}
+	
 	@Override
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
+	
 	@Override
 	public boolean isEnabled() {
 		return true;
 	}
+	
 	public UserDetailsImpl(UserEntity userEntity) {
 		this.userEntity = userEntity;
 	}
+	
 	public UserDetailsImpl(UserEntity entity, Map<String, Object> attributes) {
 		this.userEntity = entity;
 		this.attributes = attributes;

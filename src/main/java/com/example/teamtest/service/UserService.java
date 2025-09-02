@@ -8,7 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.EnumType;
 import jakarta.transaction.Transactional;
 
 import com.example.teamtest.domain.Grade;

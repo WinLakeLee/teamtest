@@ -27,6 +27,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
 			throws ServletException, IOException {
 		String jwt = jwtService.resolveToken(request);
+		System.out.println(jwt);
 		if(jwtService.validate(jwt)) {
 			String username = jwtService.getUsername(jwt);
 			List<? extends GrantedAuthority> roles = jwtService.getAuthorities(jwt);

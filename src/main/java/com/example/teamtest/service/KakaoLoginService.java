@@ -12,6 +12,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.teamtest.domain.Grade;
 import com.example.teamtest.domain.OAuthType;
 import com.example.teamtest.domain.entity.UserEntity;
 import com.google.gson.Gson;
@@ -81,6 +82,7 @@ public class KakaoLoginService {
 				.nickname(username)
 				.email(email)
 				.password(totalService.generatePw())
+				.grade(Grade.BRONZE)
 				.oAuthType(OAuthType.KAKAO)
 				.build();
 		return user;

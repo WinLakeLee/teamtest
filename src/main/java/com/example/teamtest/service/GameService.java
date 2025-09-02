@@ -97,6 +97,7 @@ public class GameService {
 				// 정답 리스트에 다른 정답들 추가
 				allQuizzes.stream().map(QuizEntity::getAnswer)
 						.filter(answer -> !answer.equals(mainQuiz.getAnswer()))
+						.distinct()
 						.limit(3)
 						.forEach(answerList::add);
 
@@ -179,7 +180,7 @@ public class GameService {
 		UserEntity user = userRepository.findByUsername((String) (map.get("username"))).orElseThrow();
 		System.out.println(user);
 		GameList gameList = gameListRepository.findById(user.getId())
-				.orElseGet(() -> new GameList(user.getId(), 0, 0, 0, 0, 0, 0, 0, 0));
+				.orElseGet(() -> new GameList(user.getId(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		System.out.println(gameList);
 		switch ((String) map.get("game")) {
 		case "lol":
@@ -210,9 +211,16 @@ public class GameService {
 			}
 			gameListRepository.save(gameList);
 			return score;
+		case "loa":
+			gameList.setLoaWeeklyScore(gameList.getLoaWeeklyScore() + score);
+			if (gameList.getLoaMaxScore() < score) {
+				gameList.setLoaMaxScore(score);
+			}
+			gameListRepository.save(gameList);
+			return score;
 
 		default:
-			return null;
+			return score;
 		}
 	}
 }

@@ -23,21 +23,21 @@ import lombok.RequiredArgsConstructor;
 public class GameFilter extends OncePerRequestFilter {
 
 	private final JwtService jwtService;
-	private static final String PREFIX = "game";
+	private static final String PREFIX = "/quiz/*";
 	private final int DAILY_LIMIT = 3;
 
 	private final ConcurrentHashMap<String, Integer> attempts = new ConcurrentHashMap<>();
-
+	
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
-		if (request.getRequestURI().startsWith(PREFIX)) {
+		if (request.getRequestURI().contentEquals(PREFIX)) {
 			String jwt = jwtService.resolveToken(request);
 			String username = jwtService.getUsername(jwt);
 			if (StringUtils.hasText(username)) {
 				int currentAttempts = attempts.compute(username, (key, count) -> (count == null) ? 1 : count + 1);
 				if(currentAttempts > DAILY_LIMIT) {
-					response.sendError(HttpServletResponse.SC_FORBIDDEN);
+					response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
 					return;
 				}
 			}

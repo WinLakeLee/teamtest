@@ -21,10 +21,7 @@ import com.example.teamtest.domain.Grade;
 
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
-import com.example.teamtest.jwt.JwtService;
 import com.example.teamtest.service.UserService;
-
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
