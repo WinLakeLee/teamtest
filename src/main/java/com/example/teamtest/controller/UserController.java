@@ -55,7 +55,8 @@ public class UserController {
                 .email(user.getEmail())
                 .password(null)
                 .point(user.getPoint())
-                .grade(Grade.BRONZE)
+                .grade(user.getGrade())
+                .nicknameBg(user.getNicknameBg())
                 .build();
 
         return ResponseEntity.ok(dto);

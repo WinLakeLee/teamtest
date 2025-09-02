@@ -16,6 +16,8 @@ import com.example.teamtest.Repository.MyItemRepository;
 import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.domain.Grade;
 import com.example.teamtest.domain.ItemCategory;
+import com.example.teamtest.domain.DTO.MarketDTO;
+import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.MarketEntity;
 import com.example.teamtest.domain.entity.MyItemEntity;
 import com.example.teamtest.domain.entity.UserEntity;
@@ -82,6 +84,13 @@ public class MarketController {
 			
 			UserEntity owner = myItem.getOwner();
 			owner.setPoint(owner.getPoint() + myItem.getItem().getItemPrice());
+			
+			// 만약 환불한 아이템을 적용하고 있다면 해제
+			if(owner.getNicknameBg() != null &&
+			   owner.getNicknameBg().equals(myItem.getItem().getEffectImage())) {
+			   owner.setNicknameBg(null);	
+			}
+			
 			userRepository.save(owner);
 			
 			myItemRepository.delete(myItem);
@@ -91,7 +100,7 @@ public class MarketController {
 	    }
 	}
 	
-	// 등급 업데이트
+	// 아이템 사용, 등급 업데이트
 	@PostMapping("use/{userId}/{itemId}") 
 	public ResponseEntity<?> useGrade(@PathVariable Long userId, @PathVariable Long itemId) {
 		UserEntity user = userRepository.findById(userId)
@@ -111,7 +120,12 @@ public class MarketController {
 	    }
 		userRepository.save(user);
 		
-		return ResponseEntity.ok(user);
+		MarketDTO dto = MarketDTO.builder()
+        		.itemId(item.getItemId())
+                .itemName(item.getItemName())
+                .build();
+		
+		return ResponseEntity.ok(dto);
 	}
 
 }
