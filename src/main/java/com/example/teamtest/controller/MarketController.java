@@ -2,7 +2,6 @@ package com.example.teamtest.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,10 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.teamtest.Repository.MarketRepository;
 import com.example.teamtest.Repository.MyItemRepository;
 import com.example.teamtest.Repository.UserRepository;
-import com.example.teamtest.domain.Grade;
 import com.example.teamtest.domain.ItemCategory;
 import com.example.teamtest.domain.DTO.MarketDTO;
-import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.MarketEntity;
 import com.example.teamtest.domain.entity.MyItemEntity;
 import com.example.teamtest.domain.entity.UserEntity;

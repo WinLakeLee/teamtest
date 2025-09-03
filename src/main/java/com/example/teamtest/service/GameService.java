@@ -158,7 +158,7 @@ public class GameService {
 		List<HonorListDTO> msTop5 = rankRepository.findAllByOrderByMsScoreDesc().stream().limit(5)
 				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getMsScore())).toList();
 		scoreMap.put("MS", msTop5);
-
+		
 		return scoreMap;
 	}
 
