@@ -23,25 +23,14 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-
-	public UserEntity getUser(String username, String password)
-//			throws AuthenticationException
-	{
-		UserEntity entity = userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 아이디입니다."));
-
-		if(password.equals(entity.getPassword())) {
-			return null;
-//	            throw new AuthenticationException();
-	    }
-		return entity;
-  }
-    
+	
+	// 회원가입 서비스
 	public UserEntity insert(UserDTO dto) {
-		
-		if(userRepository.findByUsername(dto.getUsername()).isPresent()) {
+
+		if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
 			throw new IllegalArgumentException("이미 존재하는 아이디입니다");
 		}
-		
+
 		UserEntity entity = new UserEntity();
 		entity.setUsername(dto.getUsername());
 		entity.setNickname(dto.getNickname());
@@ -50,29 +39,29 @@ public class UserService {
 		entity.setGrade(Grade.BRONZE);
 		entity.setCount(0);
 		entity.setPoint(0);
-		
+
 		return userRepository.save(entity);
 	}
-	
+
 	// 회원정보 조회
 	@Transactional
 	public UserEntity getUser(String username) {
 		return userRepository.findByUsername(username)
 				.orElseThrow(() -> new UsernameNotFoundException("해당 유저가 없습니다: " + username));
 	}
-	
+
 	// 회원정보 수정
 	@Transactional
 	public UserEntity update(String username, UserDTO dto) {
 		UserEntity findUser = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 유저가 없습니다."));
+				.orElseThrow(() -> new EntityNotFoundException("해당 ID의 유저가 없습니다."));
 		
 		findUser.setNickname(dto.getNickname());
 		findUser.setPassword(passwordEncoder.encode(dto.getPassword()));
-		
+
 		return userRepository.save(findUser);
 	}
-	
+
 	// 회원탈퇴
 	@Transactional
 	public boolean delete(Authentication auth, String password) {
@@ -90,6 +79,5 @@ public class UserService {
 
 		return result;
 	}
-	
-	
+
 }

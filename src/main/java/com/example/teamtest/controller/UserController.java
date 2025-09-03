@@ -35,7 +35,7 @@ public class UserController {
 	private final UserRepository userRepository;
 
 	// 회원가입
-	@PostMapping("/signup")
+	@PostMapping("signup")
 	public ResponseEntity<?> signup (@RequestBody UserDTO user) {
 		System.out.println(user.toString());
 		Long id = userService.insert(user).getId();
@@ -45,11 +45,22 @@ public class UserController {
 	
 	// 회원정보 조회
 	@GetMapping("/userinfo")
-	public ResponseEntity<?> userinfo(Authentication auth) {
-		UserEntity user = userService.getUser(auth.getName());
-		
-		return new ResponseEntity<>(user, HttpStatus.OK);
-	}
+    public ResponseEntity<UserDTO> userinfo(Authentication auth) {
+        UserEntity user = userService.getUser(auth.getName());
+
+        UserDTO dto = UserDTO.builder()
+        		.id(user.getId())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .password(null)
+                .point(user.getPoint())
+                .grade(user.getGrade())
+                .nicknameBg(user.getNicknameBg())
+                .build();
+
+        return ResponseEntity.ok(dto);
+    }
 	
 	// 회원정보 수정
 	@PutMapping("/update")
@@ -68,18 +79,22 @@ public class UserController {
 		if(result)
 			return ResponseEntity.ok("회원탈퇴 완료");
 		else
-			return ResponseEntity.badRequest().body("비밀번호 오류");
+			return ResponseEntity.ok("비밀번호 오류");
 	}
 	
 	// 로그인
-	@PostMapping("/login")
+	@PostMapping("login")
 	public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
 		UsernamePasswordAuthenticationToken cred = new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword());
 		Authentication auth = authenticationManager.authenticate(cred);
 		String jwt = jwtService.createToken(auth.getName(), auth.getAuthorities());
-		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt).header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization").build();
+		return ResponseEntity.ok()
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + jwt)
+				.header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization")
+				.build();
 
 	}
 	
 	
 }
+

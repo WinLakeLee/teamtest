@@ -1,7 +1,6 @@
 package com.example.teamtest.domain.DTO;
 
-import java.util.List;
-
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,11 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuizQuestionDTO {
+public class MarketDTO {
 
-	private Long quizId;
-	private String question;
-	private List<String> answer;
-	private Integer point;
+	@NotNull
+	private Long itemId;
+
+	@NotNull
+	private String itemName;
 	
 }

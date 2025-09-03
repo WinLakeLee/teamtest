@@ -1,6 +1,11 @@
 package com.example.teamtest.domain.DTO;
 
 
+import java.util.List;
+
+import com.example.teamtest.domain.Grade;
+import com.example.teamtest.domain.entity.UserEntity;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +20,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
+	
+	@NotNull
+	private Long id;
 
 	@NotNull(message = "이름을 입력해 주세요")
 	@NotBlank(message = "띄어쓰기는 안됩니다")
@@ -35,5 +43,13 @@ public class UserDTO {
 	@NotBlank(message = "띄어쓰기는 안됩니다")
 	@Email(message = "이메일을 입력해 주세요")
 	private String email;
+	
+	@NotNull
+	private int point;
+	
+	@NotNull
+	private Grade grade;
+	
+	private String nicknameBg;
 
 }

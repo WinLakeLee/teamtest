@@ -2,7 +2,6 @@ package com.example.teamtest.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,22 +10,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.teamtest.Repository.MarketRepository;
 import com.example.teamtest.Repository.MyItemRepository;
 import com.example.teamtest.Repository.UserRepository;
+import com.example.teamtest.domain.ItemCategory;
+import com.example.teamtest.domain.DTO.MarketDTO;
+import com.example.teamtest.domain.entity.MarketEntity;
 import com.example.teamtest.domain.entity.MyItemEntity;
 import com.example.teamtest.domain.entity.UserEntity;
 import com.example.teamtest.service.MarketService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/market")
 public class MarketController {
 	
-	@Autowired
-	private MarketService marketService;
-	@Autowired
-	private MyItemRepository myItemRepository;
-	@Autowired
-	private UserRepository userRepository;
+	private final MarketService marketService;
+	private final MyItemRepository myItemRepository;
+	private final UserRepository userRepository;
+	private final MarketRepository marketRepository;
 
 	@GetMapping // 아이템 목록 조회
 	public ResponseEntity<?> getItems() {
@@ -48,6 +52,7 @@ public class MarketController {
 	// 아이템 구매
 	@PostMapping("/purchase")
 	public ResponseEntity<?> purchaseItem(@RequestBody PurchaseRequest request) {
+
 	    try {
 	      marketService.purchaseItem(request.getUserId(), request.getItemId());
 	      return ResponseEntity.ok("구매 완료");
@@ -66,8 +71,7 @@ public class MarketController {
 	
 		return ResponseEntity.ok(myItems);
 	}
-	
-	
+
 	// 환불
 	@PostMapping("my/refund/{myItemId}")
 	public ResponseEntity<?> refundItem(@PathVariable Long myItemId) {
@@ -77,6 +81,13 @@ public class MarketController {
 			
 			UserEntity owner = myItem.getOwner();
 			owner.setPoint(owner.getPoint() + myItem.getItem().getItemPrice());
+			
+			// 만약 환불한 아이템을 적용하고 있다면 해제
+			if(owner.getNicknameBg() != null &&
+			   owner.getNicknameBg().equals(myItem.getItem().getEffectImage())) {
+			   owner.setNicknameBg(null);	
+			}
+			
 			userRepository.save(owner);
 			
 			myItemRepository.delete(myItem);
@@ -86,7 +97,32 @@ public class MarketController {
 	    }
 	}
 	
-	
-	
-	
+	// 아이템 사용, 등급 업데이트
+	@PostMapping("use/{userId}/{itemId}") 
+	public ResponseEntity<?> useGrade(@PathVariable Long userId, @PathVariable Long itemId) {
+		UserEntity user = userRepository.findById(userId)
+				.orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다"));
+		
+		MarketEntity item = marketRepository.findById(itemId)
+				.orElseThrow(() -> new RuntimeException("아이템을 찾을 수 없습니다"));
+		
+		// GRADE 아이템 사용시
+		if(item.getItemCategory() == ItemCategory.GRADE) {
+			// GRADE 아이템이면 UserEntity.grade 업데이트
+			user.setGrade(item.getItemGrade());
+	    }  
+		// IMAGE 아이템이면 effectImage 적용
+		if(item.getItemCategory() == ItemCategory.IMAGE) {
+			user.setNicknameBg(item.getEffectImage());
+	    }
+		userRepository.save(user);
+		
+		MarketDTO dto = MarketDTO.builder()
+        		.itemId(item.getItemId())
+                .itemName(item.getItemName())
+                .build();
+		
+		return ResponseEntity.ok(dto);
+	}
+
 }

@@ -26,7 +26,14 @@ public class QuizController {
 	
 	@PostMapping
 	public ResponseEntity<?> resolve(@RequestBody Map<?, ?> map) {
-		return ResponseEntity.ok(resolve(map));
+		Integer score = gameService.resolve(map);
+		return ResponseEntity.ok(score);
+	}
+	
+	@PostMapping("result")
+	public ResponseEntity<?> result(@RequestBody Map<?, ?> map) {
+		int score = gameService.result(map);
+		return ResponseEntity.ofNullable(score);
 	}
 	
 }
