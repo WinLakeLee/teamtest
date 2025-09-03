@@ -34,12 +34,11 @@ public class JwtService {
 		Date exp = new Date(now.getTime() + EXPIRATIONTIME);
 		
 		List<String> roles = (authorities == null) ? 
-				List.of() 
-				: 
+				List.of() : 
 				authorities.stream()
 					.map(GrantedAuthority:: getAuthority)
 					.toList();
-		
+
 		return Jwts.builder()
 				.subject(username)
 				.issuedAt(now)

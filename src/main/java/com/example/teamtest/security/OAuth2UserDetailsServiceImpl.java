@@ -24,7 +24,7 @@ public class OAuth2UserDetailsServiceImpl extends DefaultOAuth2UserService{
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 		
 		OAuth2User oAuth2User = super.loadUser(userRequest);
-		
+
 		UserDTO findUser = new UserDTO();
 			findUser.setUsername("google" + UUID.randomUUID());
 			findUser.setEmail(oAuth2User.getAttribute("sub"));

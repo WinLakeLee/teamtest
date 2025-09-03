@@ -145,6 +145,7 @@ public class QuizService {
 					rank.getLolScore() != null ? rank.getLolScore() : 0,
 					rank.getBgScore() != null ? rank.getBgScore() : 0,
 					rank.getScScore() != null ? rank.getScScore() : 0,
+					rank.getMsScore() != null ? rank.getMsScore() : 0,
 					rank.getLoaScore() != null ? rank.getLoaScore() : 0, sum);
 		}).sorted((a, b) -> Integer.compare(b.getTotalScore(), a.getTotalScore())) // 총합 기준 내림차순
 				.limit(10) // 상위 10명

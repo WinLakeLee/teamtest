@@ -49,7 +49,7 @@ public class GameList {
 	@Column
 	private Integer loaMaxScore;
 	
-	public Integer sum() {
+	public int sum() {
 		return this.getBgWeeklyScore() + this.getMsWeeklyScore() + this.getLolWeeklyScore() + this.getBgWeeklyScore() + this.getLoaWeeklyScore();
 	}
 	

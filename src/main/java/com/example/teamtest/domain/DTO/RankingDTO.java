@@ -12,6 +12,7 @@ public class RankingDTO {
 	    private Integer bgScore;
 	    private Integer scScore;
 	    private Integer msScore;
+	    private Integer loaScore;
 	    private Integer totalScore;
 	
 }

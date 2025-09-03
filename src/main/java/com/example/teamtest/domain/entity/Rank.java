@@ -38,9 +38,6 @@ public class Rank {
     @Column
     private Integer msScore;
     
-
     @Column
     private Integer loaScore;
-
-
 }
