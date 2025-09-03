@@ -19,13 +19,12 @@ public class QuizController {
 	
 	@PostMapping("quiz/{game}")
 	public ResponseEntity<?> generateQuiz(@PathVariable String game) {
-		System.out.println(game);
 		return ResponseEntity.ok(quizService.generateQuiz(game.toUpperCase()));
 	}
 	
 	@PostMapping("score")
 	public ResponseEntity<?> resolve(@RequestBody Map<?, ?> map) {
-		Integer score = quizService.resolve(map);
+		int score = quizService.resolve(map);
 		return ResponseEntity.ok(score);
 	}
 	

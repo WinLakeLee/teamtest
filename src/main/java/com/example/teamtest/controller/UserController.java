@@ -38,6 +38,7 @@ public class UserController {
 	@GetMapping("/userinfo")
 	public ResponseEntity<UserDTO> userinfo(Authentication auth) {
 		UserEntity user = userService.getUser(auth.getName());
+		System.out.println(user);
 		return ResponseEntity.ok(userService.from(user));
 	}
 

@@ -73,7 +73,6 @@ public class UserService {
 		entity.setCount(0);
 		entity.setPoint(0);
 		entity.setOAuthType(OAuthType.BOARD);
-
 		return userRepository.save(entity);
 	}
 	
@@ -93,10 +92,8 @@ public class UserService {
 	public UserEntity update(String username, UserDTO dto) {
 		UserEntity findUser = userRepository.findByUsername(username)
 				.orElseThrow(() -> new EntityNotFoundException("해당 ID의 유저가 없습니다."));
-		
 		findUser.setNickname(dto.getNickname());
 		findUser.setPassword(passwordEncoder.encode(dto.getPassword()));
-
 		return userRepository.save(findUser);
 	}
 
@@ -105,7 +102,6 @@ public class UserService {
 	public boolean delete(Authentication auth, String password) {
 		UserEntity user = userRepository.findByUsername(auth.getName()).get();
 		boolean result = passwordEncoder.matches(password, user.getPassword());
-
 		try {
 			if (result)
 				userRepository.deleteById(user.getId());

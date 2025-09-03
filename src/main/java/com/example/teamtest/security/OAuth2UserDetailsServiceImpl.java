@@ -1,7 +1,5 @@
 package com.example.teamtest.security;
 
-import java.util.UUID;
-
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -26,8 +24,8 @@ public class OAuth2UserDetailsServiceImpl extends DefaultOAuth2UserService{
 		OAuth2User oAuth2User = super.loadUser(userRequest);
 
 		UserDTO findUser = new UserDTO();
-			findUser.setUsername("google" + UUID.randomUUID());
-			findUser.setEmail(oAuth2User.getAttribute("sub"));
+			findUser.setUsername(oAuth2User.getAttribute("sub"));
+			findUser.setEmail(oAuth2User.getAttribute("email"));
 			findUser.setNickname(oAuth2User.getAttribute("name"));
 			findUser.setPassword(totalService.generatePw());
 		UserEntity entity = userService.insert(findUser);
