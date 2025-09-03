@@ -171,11 +171,9 @@ public class QuizService {
 		List<HonorListDTO> msTop5 = rankRepository.findAllByOrderByMsScoreDesc().stream().limit(5)
 				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getMsScore())).toList();
 		scoreMap.put("MS", msTop5);
-		
 		List<HonorListDTO> loaTop5 = rankRepository.findAllByOrderByMsScoreDesc().stream().limit(5)
 				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getMsScore())).toList();
 		scoreMap.put("LOA", loaTop5);
-
 		return scoreMap;
 	}
 

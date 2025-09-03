@@ -45,5 +45,7 @@ public class UserDTO {
 	
 	@NotNull
 	private Grade grade;
+	
+	private String nicknameBg;
 
 }
