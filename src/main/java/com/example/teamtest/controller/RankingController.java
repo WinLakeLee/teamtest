@@ -5,30 +5,28 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.teamtest.domain.DTO.HonorListDTO;
 import com.example.teamtest.domain.DTO.RankingDTO;
-import com.example.teamtest.service.GameService;
+import com.example.teamtest.service.QuizService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class GameController {
+public class RankingController {
 
-	private final GameService gameService;
+	private final QuizService quizService;
 
 	@GetMapping("/ranking")
 	public ResponseEntity<Map<String, List<HonorListDTO>>> getTopScores() {
-		
-	    return ResponseEntity.ok(gameService.getScore());
+	    return ResponseEntity.ok(quizService.getScore());
 	}
 	
 	@GetMapping("/honor")
 	public ResponseEntity<List<RankingDTO>> getTotalScore() {
-        List<RankingDTO> rank = gameService.getTotalScores();
+        List<RankingDTO> rank = quizService.getTotalScores();
         return ResponseEntity.ok(rank);
     }
 }

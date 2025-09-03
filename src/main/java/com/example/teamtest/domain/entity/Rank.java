@@ -13,16 +13,17 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@Table(name = "rank")
+@Table(name = "ranking")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Rank {
 
     @Id
-    private Long userId;
+    @Column
+    private Long rankId;
     
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    @JoinColumn(name = "id", insertable = false, updatable = false)
     private UserEntity user;
     
     @Column
@@ -36,5 +37,7 @@ public class Rank {
 
     @Column
     private Integer msScore;
-
+    
+    @Column
+    private Integer loaScore;
 }

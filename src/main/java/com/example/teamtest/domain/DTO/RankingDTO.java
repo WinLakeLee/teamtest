@@ -7,11 +7,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class RankingDTO {
 
-	    private String nickname;
-	    private Integer lolScore;
-	    private Integer bgScore;
-	    private Integer scScore;
-	    private Integer msScore;
-	    private Integer totalScore;
+    private String nickname;
+    private Integer lolScore;
+    private Integer bgScore;
+    private Integer scScore;
+    private Integer msScore;
+    private Integer loaScore;
+    private Integer totalScore;
 	
 }

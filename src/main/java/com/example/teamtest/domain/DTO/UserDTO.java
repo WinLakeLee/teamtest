@@ -1,10 +1,6 @@
 package com.example.teamtest.domain.DTO;
 
-
-import java.util.List;
-
 import com.example.teamtest.domain.Grade;
-import com.example.teamtest.domain.entity.UserEntity;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

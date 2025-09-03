@@ -13,4 +13,5 @@ public interface RankRepository extends JpaRepository<Rank, Long> {
 	List<Rank> findAllByOrderByBgScoreDesc();
 	List<Rank> findAllByOrderByScScoreDesc();
 	List<Rank> findAllByOrderByMsScoreDesc();
+	List<Rank> findAllByOrderByLoaScoreDesc();
 }

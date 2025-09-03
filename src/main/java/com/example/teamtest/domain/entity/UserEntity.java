@@ -3,6 +3,7 @@ package com.example.teamtest.domain.entity;
 import java.util.List;
 
 import com.example.teamtest.domain.Grade;
+import com.example.teamtest.domain.OAuthType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,11 +16,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="user")
@@ -68,6 +71,10 @@ public class UserEntity {
 	
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST)
     private List<MyItemEntity> items;
+	
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private OAuthType oAuthType;
 	
 	@Column
 	private String nicknameBg;
