@@ -1,7 +1,6 @@
 package com.example.teamtest.security;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -26,15 +25,10 @@ public class OAuth2UserDetailsServiceImpl extends DefaultOAuth2UserService{
 		
 		OAuth2User oAuth2User = super.loadUser(userRequest);
 		
-		Map<String, String> map = new HashMap<>();
-		map.put("id", oAuth2User.getAttribute("sub"));
-		map.put("email", oAuth2User.getAttribute("sub"));
-		map.put("nickname", oAuth2User.getAttribute("name"));
-		
 		UserDTO findUser = new UserDTO();
-			findUser.setUsername(map.get("id"));
-			findUser.setEmail(map.get("email"));
-			findUser.setNickname(map.get("name"));
+			findUser.setUsername("google" + UUID.randomUUID());
+			findUser.setEmail(oAuth2User.getAttribute("sub"));
+			findUser.setNickname(oAuth2User.getAttribute("name"));
 			findUser.setPassword(totalService.generatePw());
 		UserEntity entity = userService.insert(findUser);
 		
@@ -42,4 +36,5 @@ public class OAuth2UserDetailsServiceImpl extends DefaultOAuth2UserService{
 	
 	}
 
+	
 }

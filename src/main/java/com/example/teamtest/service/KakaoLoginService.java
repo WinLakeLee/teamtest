@@ -3,6 +3,7 @@ package com.example.teamtest.service;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,13 +24,16 @@ public class KakaoLoginService {
 	@Autowired
 	private TotalService totalService;
 	
+	@Value("${kakao_client_id}")
+	private String clientId;
+	
 	public String getAccessToken(String code) {
 		HttpHeaders header = new HttpHeaders();
 		header.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 		
 		MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 		body.add("grant_type", "authorization_code");
-		body.add("client_id", "8eff0a3d6dcf5fdf1922273f97e775da");
+		body.add("client_id", clientId);
 		body.add("redirect_uri", "http://localhost:8888/oauth/kakao");
 		body.add("code", code);
 
@@ -71,9 +75,7 @@ public class KakaoLoginService {
 		String jsonData = responseEntity.getBody();
 		Gson gson = new Gson();
 		Map<?, ?> data = gson.fromJson(jsonData, Map.class);
-		// nickname 가져오기
-//		Map<?, ?> properties = (Map<?, ?>)data.get("properties");
-//		String username = (String)properties.get("nickname");
+		
 		Integer id =  Double.valueOf((Double)data.get("id")).intValue();
 		String username = (String)((Map<?, ?>)data.get("properties")).get("nickname");
 		String email = (String)((Map<?, ?>)data.get("kakao_account")).get("email");

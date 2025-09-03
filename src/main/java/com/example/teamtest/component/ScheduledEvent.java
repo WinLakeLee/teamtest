@@ -1,5 +1,7 @@
 package com.example.teamtest.component;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,7 +34,7 @@ public class ScheduledEvent {
 	
 	@Scheduled(cron = "0 0 0 * * ?")
 	public ConcurrentHashMap<?, ?> dailyEvent() {
-        ConcurrentHashMap<String, Integer> attempts = gameFilter.getAttempts();
+        ConcurrentHashMap<String, Map<String, Integer>> attempts = gameFilter.getAttempts();
         attempts.clear();
         return attempts;
 	}

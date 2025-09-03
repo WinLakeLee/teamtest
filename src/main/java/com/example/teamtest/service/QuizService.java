@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class GameService {
+public class QuizService {
 
 	private final UserRepository userRepository;
 	private final QuizRepository quizRepository;
@@ -139,12 +139,13 @@ public class GameService {
 			Integer sum = (rank.getLolScore() != null ? rank.getLolScore() : 0)
 					+ (rank.getBgScore() != null ? rank.getBgScore() : 0)
 					+ (rank.getScScore() != null ? rank.getScScore() : 0)
-					+ (rank.getMsScore() != null ? rank.getMsScore() : 0);
+					+ (rank.getMsScore() != null ? rank.getMsScore() : 0)
+					+ (rank.getLoaScore() != null ? rank.getLoaScore() : 0);
 			return new RankingDTO(rank.getUser().getNickname(), 
 					rank.getLolScore() != null ? rank.getLolScore() : 0,
 					rank.getBgScore() != null ? rank.getBgScore() : 0,
 					rank.getScScore() != null ? rank.getScScore() : 0,
-					rank.getMsScore() != null ? rank.getMsScore() : 0, sum);
+					rank.getLoaScore() != null ? rank.getLoaScore() : 0, sum);
 		}).sorted((a, b) -> Integer.compare(b.getTotalScore(), a.getTotalScore())) // 총합 기준 내림차순
 				.limit(10) // 상위 10명
 				.collect(Collectors.toList());
@@ -169,6 +170,10 @@ public class GameService {
 		List<HonorListDTO> msTop5 = rankRepository.findAllByOrderByMsScoreDesc().stream().limit(5)
 				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getMsScore())).toList();
 		scoreMap.put("MS", msTop5);
+		
+		List<HonorListDTO> loaTop5 = rankRepository.findAllByOrderByMsScoreDesc().stream().limit(5)
+				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getMsScore())).toList();
+		scoreMap.put("LOA", loaTop5);
 
 		return scoreMap;
 	}
@@ -176,7 +181,6 @@ public class GameService {
 	@Transactional
 	public Integer result(Map<?, ?> map) {
 		Integer score = (Integer) map.get("score");
-		System.out.println(score);
 		UserEntity user = userRepository.findByUsername((String) (map.get("username"))).orElseThrow();
 		System.out.println(user);
 		GameList gameList = gameListRepository.findById(user.getId())
@@ -218,7 +222,6 @@ public class GameService {
 			}
 			gameListRepository.save(gameList);
 			return score;
-
 		default:
 			return score;
 		}

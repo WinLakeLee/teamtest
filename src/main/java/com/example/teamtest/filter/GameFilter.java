@@ -1,6 +1,9 @@
 package com.example.teamtest.filter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.lang.NonNull;
@@ -23,21 +26,25 @@ import lombok.RequiredArgsConstructor;
 public class GameFilter extends OncePerRequestFilter {
 
 	private final JwtService jwtService;
-	private static final String PREFIX = "/quiz/*";
-	private final int DAILY_LIMIT = 3;
+	// 퀴즈 경로
+	private static final String PREFIX = "/quiz";
+	// 게임 별 횟수 제한
+	private final int DAILY_LIMIT = 999;
 
-	private final ConcurrentHashMap<String, Integer> attempts = new ConcurrentHashMap<>();
-	
+	private final ConcurrentHashMap<String, Map<String, Integer>> attempts = new ConcurrentHashMap<>();
+
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
-		if (request.getRequestURI().contentEquals(PREFIX)) {
+		if (request.getRequestURI().startsWith(PREFIX)) {
 			String jwt = jwtService.resolveToken(request);
 			String username = jwtService.getUsername(jwt);
+			String gameName = request.getRequestURI().substring(PREFIX.length() + 1).toUpperCase();
 			if (StringUtils.hasText(username)) {
-				int currentAttempts = attempts.compute(username, (key, count) -> (count == null) ? 1 : count + 1);
-				if(currentAttempts > DAILY_LIMIT) {
-					response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
+				int currentAttempts = attempts.computeIfAbsent(username, k -> new HashMap<>())
+						.compute(gameName, (name, count) -> (count == null) ? 1 : count + 1);
+				if (currentAttempts > DAILY_LIMIT) {
+					response.sendError(HttpServletResponse.SC_FORBIDDEN);
 					return;
 				}
 			}

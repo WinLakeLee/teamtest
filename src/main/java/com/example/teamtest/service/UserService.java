@@ -1,8 +1,16 @@
 package com.example.teamtest.service;
 
-import javax.security.sasl.AuthenticationException;
+import java.util.List;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +23,7 @@ import com.example.teamtest.domain.OAuthType;
 import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
+import com.example.teamtest.jwt.JwtService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,14 +33,39 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final AuthenticationManager authenticationManager;
+	private final JwtService jwtService;
+	private final KakaoLoginService kakaoLoginService;
+	
+	
+	public HttpHeaders login(UserDTO userDTO) throws AuthenticationException {
+		UsernamePasswordAuthenticationToken cred = new UsernamePasswordAuthenticationToken(userDTO.getUsername(),
+				userDTO.getPassword());
+		Authentication auth = authenticationManager.authenticate(cred);
+		String jwt = jwtService.createToken(auth.getName(), auth.getAuthorities());
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(jwt);
+		headers.setAccessControlExposeHeaders(List.of("Authorization"));
+		return headers;
+	}
+	
+	public HttpStatus kakaoLogin(String code) {
+		String accessToken = kakaoLoginService.getAccessToken(code);
+		UserEntity userInfo = kakaoLoginService.getUserInfo(accessToken);
+		insert(userInfo);
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userInfo.getUsername(),
+				userInfo.getPassword());
+		Authentication authentication = authenticationManager.authenticate(token);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		return HttpStatus.OK;
+	}
+	
 	
 	// 회원가입 서비스
 	public UserEntity insert(UserDTO dto) {
-
 		if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
 			throw new IllegalArgumentException("이미 존재하는 아이디입니다");
 		}
-
 		UserEntity entity = new UserEntity();
 		entity.setUsername(dto.getUsername());
 		entity.setNickname(dto.getNickname());
@@ -42,6 +76,10 @@ public class UserService {
 		entity.setPoint(0);
 		entity.setOAuthType(OAuthType.BOARD);
 
+		return userRepository.save(entity);
+	}
+	
+	public UserEntity insert(UserEntity entity) {
 		return userRepository.save(entity);
 	}
 
@@ -74,12 +112,18 @@ public class UserService {
 			if (result)
 				userRepository.deleteById(user.getId());
 			else
-				throw new AuthenticationException();
-		} catch (AuthenticationException e) {
-			System.out.println(e.getMessage());
+				throw new EntityNotFoundException();
+		} catch (EntityNotFoundException e) {
+			e.printStackTrace();
 		}
 
 		return result;
+	}
+	
+	public UserDTO from(UserEntity user) {
+		UserDTO dto = UserDTO.builder().id(user.getId()).username(user.getUsername()).nickname(user.getNickname())
+				.email(user.getEmail()).password(null).point(user.getPoint()).grade(Grade.BRONZE).build();
+		return dto;
 	}
 
 }
