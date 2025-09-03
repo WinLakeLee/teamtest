@@ -68,7 +68,7 @@ public class UserController {
 		if(result)
 			return ResponseEntity.ok("회원탈퇴 완료");
 		else
-			return ResponseEntity.ok("비밀번호 오류");
+			return ResponseEntity.badRequest().body("비밀번호 오류");
 	}
 	
 	// 로그인
