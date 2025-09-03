@@ -44,7 +44,7 @@ public class GameList {
 	private Integer msMaxScore;
 	
 	public Integer sum() {
-		return this.getBgWeeklyScore() + this.getMsWeeklyScore() + this.getLolWeeklyScore() + this.getBgWeeklyScore();
+		return this.getBgWeeklyScore() + this.getMsWeeklyScore() + this.getLolWeeklyScore() + this.getScWeeklyScore();
 	}
 	
 }
