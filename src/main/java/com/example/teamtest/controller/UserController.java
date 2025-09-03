@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.teamtest.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 
+import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
 import com.example.teamtest.service.UserService;
@@ -30,6 +32,7 @@ public class UserController {
 	private final UserService userService;
 	private final JwtService jwtService;
 	private final AuthenticationManager authenticationManager;
+	private final UserRepository userRepository;
 
 	// 회원가입
 	@PostMapping("/signup")
@@ -51,16 +54,21 @@ public class UserController {
 	// 회원정보 수정
 	@PutMapping("/update")
 	public ResponseEntity<?> updateUser(Authentication auth, @RequestBody UserDTO dto) {
-		UserEntity user = userService.update(auth.getName(), dto);
-		return ResponseEntity.ok(user);
+	    String username = auth.getName();
+	    UserEntity updated = userService.update(username, dto);
+	    return ResponseEntity.ok(updated);
 	}
 	
 	// 회원탈퇴
 	@DeleteMapping("/delete")
-	public ResponseEntity<?> deleteUser(Authentication auth, @RequestBody Map<?, ?> map) {
-		userService.delete(auth.getName(), map.get("password").toString());
+	public ResponseEntity<?> deleteUser(Authentication auth, @RequestParam String password) {
+		UserEntity user = userRepository.findByUsername(auth.getName()).get();
+		boolean result = userService.delete(auth, password);
 		
-		return ResponseEntity.ok(null);
+		if(result)
+			return ResponseEntity.ok("회원탈퇴 완료");
+		else
+			return ResponseEntity.ok("비밀번호 오류");
 	}
 	
 	// 로그인

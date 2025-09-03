@@ -2,6 +2,8 @@ package com.example.teamtest.service;
 
 import javax.security.sasl.AuthenticationException;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -55,40 +57,38 @@ public class UserService {
 	// 회원정보 조회
 	@Transactional
 	public UserEntity getUser(String username) {
-		return userRepository.findByUsername(username).get();
+		return userRepository.findByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("해당 유저가 없습니다: " + username));
 	}
 	
 	// 회원정보 수정
 	@Transactional
 	public UserEntity update(String username, UserDTO dto) {
-		try {
 		UserEntity findUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 유저가 없습니다."));
 		
-		if(passwordEncoder.matches(dto.getPassword(), findUser.getPassword()))
-			userRepository.deleteById(findUser.getId());
-		else 
-			throw new AuthenticationException();
 		findUser.setNickname(dto.getNickname());
 		findUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+		
 		return userRepository.save(findUser);
-		} catch (AuthenticationException e) {
-			System.out.println(e.getMessage());
-		}
-		return null;
 	}
 	
 	// 회원탈퇴
 	@Transactional
-	public void delete(String username, String password) {
-		try {UserEntity entity = userRepository.findByUsername(username).orElseThrow();
-		if(passwordEncoder.matches(password, entity.getPassword()))
-			userRepository.deleteById(entity.getId());
-		else 
-			throw new AuthenticationException();
+	public boolean delete(Authentication auth, String password) {
+		UserEntity user = userRepository.findByUsername(auth.getName()).get();
+		boolean result = passwordEncoder.matches(password, user.getPassword());
+
+		try {
+			if (result)
+				userRepository.deleteById(user.getId());
+			else
+				throw new AuthenticationException();
 		} catch (AuthenticationException e) {
 			System.out.println(e.getMessage());
 		}
+
+		return result;
 	}
 	
 	

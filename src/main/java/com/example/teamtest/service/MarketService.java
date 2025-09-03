@@ -14,6 +14,8 @@ import com.example.teamtest.domain.entity.MarketEntity;
 import com.example.teamtest.domain.entity.MyItemEntity;
 import com.example.teamtest.domain.entity.UserEntity;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
 public class MarketService {
