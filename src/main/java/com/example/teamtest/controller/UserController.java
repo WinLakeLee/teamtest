@@ -1,7 +1,5 @@
 package com.example.teamtest.controller;
 
-import javax.naming.AuthenticationException;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
 import com.example.teamtest.service.UserService;
@@ -25,6 +24,8 @@ import com.example.teamtest.service.UserService;
 public class UserController {
 
 	private final UserService userService;
+	private final UserRepository userRepository;
+
 	// 회원가입
 	@PostMapping("signup")
 	public ResponseEntity<?> signup(@RequestBody UserDTO user) {
@@ -45,15 +46,16 @@ public class UserController {
 	// 회원정보 수정
 	@PutMapping("/update")
 	public ResponseEntity<?> updateUser(Authentication auth, @RequestBody UserDTO dto) {
-		String username = auth.getName();
-		UserEntity update = userService.update(username, dto);
 
-		return ResponseEntity.ok(update);
+	    String username = auth.getName();
+	    UserEntity updated = userService.update(username, dto);
+	    return ResponseEntity.ok(updated);
 	}
 
 	// 회원탈퇴
 	@DeleteMapping("/delete")
 	public ResponseEntity<?> deleteUser(Authentication auth, @RequestParam String password) {
+		UserEntity user = userRepository.findByUsername(auth.getName()).get();
 		boolean result = userService.delete(auth, password);
 
 		if (result)
@@ -61,21 +63,12 @@ public class UserController {
 		else
 			return ResponseEntity.ok("비밀번호 오류");
 	}
-
+	
 	// 로그인
 	@PostMapping("login")
 	public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
 		HttpHeaders headers = userService.login(userDTO);
 		return new ResponseEntity<>(headers, HttpStatus.OK);
 	}
-
-	@GetMapping("/oauth/kakao")
-	public ResponseEntity<?> kakaoCallback(String code) throws AuthenticationException {
-		HttpStatus status = userService.kakaoLogin(code);
-		return new ResponseEntity<>(status);
-	}
-	
-//	@GetMapping("/oauth/google")
-	
 
 }
