@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import com.example.teamtest.Repository.UserRepository;
+import com.example.teamtest.domain.Grade;
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
 import com.example.teamtest.service.UserService;
@@ -24,7 +25,6 @@ import com.example.teamtest.service.UserService;
 public class UserController {
 
 	private final UserService userService;
-	private final UserRepository userRepository;
 
 	// 회원가입
 	@PostMapping("signup")
@@ -39,8 +39,8 @@ public class UserController {
 	@GetMapping("/userinfo")
 	public ResponseEntity<UserDTO> userinfo(Authentication auth) {
 		UserEntity user = userService.getUser(auth.getName());
-		System.out.println(user);
-		return ResponseEntity.ok(userService.from(user));
+		UserDTO dto = userService.from(user);
+		return ResponseEntity.ok(dto);
 	}
 
 	// 회원정보 수정
@@ -55,7 +55,6 @@ public class UserController {
 	// 회원탈퇴
 	@DeleteMapping("/delete")
 	public ResponseEntity<?> deleteUser(Authentication auth, @RequestParam String password) {
-		UserEntity user = userRepository.findByUsername(auth.getName()).get();
 		boolean result = userService.delete(auth, password);
 
 		if (result)

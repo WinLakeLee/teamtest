@@ -33,7 +33,7 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
-	private final KakaoLoginService kakaoLoginService;
+//	private final KakaoLoginService kakaoLoginService;
 	
 	
 	public HttpHeaders login(UserDTO userDTO) throws AuthenticationException {
@@ -47,16 +47,16 @@ public class UserService {
 		return headers;
 	}
 	
-	public HttpStatus kakaoLogin(String code) {
-		String accessToken = kakaoLoginService.getAccessToken(code);
-		UserEntity userInfo = kakaoLoginService.getUserInfo(accessToken);
-		insert(userInfo);
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userInfo.getUsername(),
-				userInfo.getPassword());
-		Authentication authentication = authenticationManager.authenticate(token);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		return HttpStatus.OK;
-	}
+//	public HttpStatus kakaoLogin(String code) {
+//		String accessToken = kakaoLoginService.getAccessToken(code);
+//		UserEntity userInfo = kakaoLoginService.getUserInfo(accessToken);
+//		insert(userInfo);
+//		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userInfo.getUsername(),
+//				userInfo.getPassword());
+//		Authentication authentication = authenticationManager.authenticate(token);
+//		SecurityContextHolder.getContext().setAuthentication(authentication);
+//		return HttpStatus.OK;
+//	}
 	
 	
 	// 회원가입 서비스
@@ -116,7 +116,7 @@ public class UserService {
 	
 	public UserDTO from(UserEntity user) {
 		UserDTO dto = UserDTO.builder().id(user.getId()).username(user.getUsername()).nickname(user.getNickname())
-				.email(user.getEmail()).password(null).point(user.getPoint()).grade(Grade.BRONZE).build();
+				.email(user.getEmail()).password(null).point(user.getPoint()).grade(user.getGrade()).nicknameBg(user.getNicknameBg()).build();
 		return dto;
 	}
 
