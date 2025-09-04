@@ -2,12 +2,14 @@ package com.example.teamtest.service;
 
 import java.util.List;
 
+import javax.security.sasl.AuthenticationException;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +35,7 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
-	private final KakaoLoginService kakaoLoginService;
+//	private final KakaoLoginService kakaoLoginService;
 	
 	
 	public HttpHeaders login(UserDTO userDTO) throws AuthenticationException {
@@ -47,16 +49,17 @@ public class UserService {
 		return headers;
 	}
 	
-	public HttpStatus kakaoLogin(String code) {
-		String accessToken = kakaoLoginService.getAccessToken(code);
-		UserEntity userInfo = kakaoLoginService.getUserInfo(accessToken);
-		insert(userInfo);
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userInfo.getUsername(),
-				userInfo.getPassword());
-		Authentication authentication = authenticationManager.authenticate(token);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		return HttpStatus.OK;
-	}
+	// 카카오 로그인
+//	public HttpStatus kakaoLogin(String code) {
+//		String accessToken = kakaoLoginService.getAccessToken(code);
+//		UserEntity userInfo = kakaoLoginService.getUserInfo(accessToken);
+//		insert(userInfo);
+//		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userInfo.getUsername(),
+//				userInfo.getPassword());
+//		Authentication authentication = authenticationManager.authenticate(token);
+//		SecurityContextHolder.getContext().setAuthentication(authentication);
+//		return HttpStatus.OK;
+//	}
 	
 	
 	// 회원가입 서비스
@@ -102,13 +105,14 @@ public class UserService {
 	public boolean delete(Authentication auth, String password) {
 		UserEntity user = userRepository.findByUsername(auth.getName()).get();
 		boolean result = passwordEncoder.matches(password, user.getPassword());
+
 		try {
 			if (result)
 				userRepository.deleteById(user.getId());
 			else
-				throw new EntityNotFoundException();
-		} catch (EntityNotFoundException e) {
-			e.printStackTrace();
+				throw new AuthenticationException();
+		} catch (AuthenticationException e) {
+			System.out.println(e.getMessage());
 		}
 
 		return result;
