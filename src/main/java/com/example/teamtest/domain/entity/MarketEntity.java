@@ -50,5 +50,4 @@ public class MarketEntity {
         this.itemGrade = itemGrade;
         this.effectImage = effectImage;
     }
-	
 }

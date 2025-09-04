@@ -69,7 +69,7 @@ public class UserEntity {
 	@Column
 	private Integer lastWeekScore;
 	
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<MyItemEntity> items;
 	
 	@Column(nullable = false)
