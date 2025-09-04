@@ -1,5 +1,7 @@
 package com.example.teamtest.controller;
 
+import javax.security.sasl.AuthenticationException;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +67,7 @@ public class UserController {
 	
 	// 로그인
 	@PostMapping("login")
-	public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
+	public ResponseEntity<?> login(@RequestBody UserDTO userDTO) throws AuthenticationException {
 		HttpHeaders headers = userService.login(userDTO);
 		return new ResponseEntity<>(headers, HttpStatus.OK);
 	}
