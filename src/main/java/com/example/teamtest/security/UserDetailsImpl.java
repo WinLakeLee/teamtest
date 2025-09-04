@@ -37,7 +37,6 @@ public class UserDetailsImpl implements UserDetails, OAuth2User{
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		
 		return Collections.singletonList(
 				new SimpleGrantedAuthority(
 						userEntity.getGrade().toString()

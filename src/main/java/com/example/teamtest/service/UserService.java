@@ -1,28 +1,26 @@
 package com.example.teamtest.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-
+import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.domain.Grade;
 import com.example.teamtest.domain.OAuthType;
-import com.example.teamtest.Repository.UserRepository;
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
 import com.example.teamtest.jwt.JwtService;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -33,9 +31,8 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
-//	private final KakaoLoginService kakaoLoginService;
-	
-	
+	private final KakaoLoginService kakaoLoginService;
+		
 	public HttpHeaders login(UserDTO userDTO) throws AuthenticationException {
 		UsernamePasswordAuthenticationToken cred = new UsernamePasswordAuthenticationToken(userDTO.getUsername(),
 				userDTO.getPassword());
@@ -47,18 +44,22 @@ public class UserService {
 		return headers;
 	}
 	
-//	public HttpStatus kakaoLogin(String code) {
-//		String accessToken = kakaoLoginService.getAccessToken(code);
-//		UserEntity userInfo = kakaoLoginService.getUserInfo(accessToken);
-//		insert(userInfo);
-//		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userInfo.getUsername(),
-//				userInfo.getPassword());
-//		Authentication authentication = authenticationManager.authenticate(token);
-//		SecurityContextHolder.getContext().setAuthentication(authentication);
-//		return HttpStatus.OK;
-//	}
+	public HttpHeaders kakaoLogin(String code) {
+		String accessToken = kakaoLoginService.getAccessToken(code);
+		UserEntity userInfo = kakaoLoginService.getUserInfo(accessToken);
+		UserEntity entity = insertOrGet(userInfo);
+		UserDTO dto = from(entity);
+		HttpHeaders headers = login(dto);
+		return headers;
+	}
 	
-	
+	public UserEntity insertOrGet(UserEntity entity) {
+		 return userRepository.findByUsername(entity.getUsername())
+			        .orElseGet(() -> {
+			        	entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+						return userRepository.save(entity);
+		});
+	}
 	// 회원가입 서비스
 	public UserEntity insert(UserDTO dto) {
 		if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
@@ -80,6 +81,14 @@ public class UserService {
 		return userRepository.save(entity);
 	}
 
+	public Optional<UserEntity> findByUsername(String username){
+		return userRepository.findByUsername(username);
+	}
+	
+	public UserEntity save(UserEntity user) {
+        return userRepository.save(user);
+    }
+	
 	// 회원정보 조회
 	@Transactional
 	public UserEntity getUser(String username) {
@@ -97,6 +106,10 @@ public class UserService {
 		return userRepository.save(findUser);
 	}
 
+	public UserEntity saveOrGet(UserEntity entity) {
+		return userRepository.findByUsername(entity.getUsername()).orElseGet(() -> userRepository.save(entity));
+	}
+	
 	// 회원탈퇴
 	@Transactional
 	public boolean delete(Authentication auth, String password) {
@@ -116,7 +129,7 @@ public class UserService {
 	
 	public UserDTO from(UserEntity user) {
 		UserDTO dto = UserDTO.builder().id(user.getId()).username(user.getUsername()).nickname(user.getNickname())
-				.email(user.getEmail()).password(null).point(user.getPoint()).grade(user.getGrade()).nicknameBg(user.getNicknameBg()).build();
+				.email(user.getEmail()).password(user.getPassword()).point(user.getPoint()).grade(user.getGrade()).nicknameBg(user.getNicknameBg()).build();
 		return dto;
 	}
 
