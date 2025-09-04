@@ -4,9 +4,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.example.teamtest.Repository.CategoryRepository;
 import com.example.teamtest.Repository.MarketRepository;
+import com.example.teamtest.domain.Category;
+import com.example.teamtest.domain.Game;
 import com.example.teamtest.domain.Grade;
 import com.example.teamtest.domain.ItemCategory;
+import com.example.teamtest.domain.entity.CategoryEntity;
 import com.example.teamtest.domain.entity.MarketEntity;
 
 @Configuration						
@@ -46,5 +50,18 @@ public class Items {
 
 			}
 		};	
+	}
+	
+	@Bean
+	CommandLineRunner initCategory(CategoryRepository categoryRepository) {
+		return args -> {
+			categoryRepository.save(new CategoryEntity(9, Game.LOA, Category.PRS));
+			categoryRepository.save(new CategoryEntity(10, Game.LOA, Category.VIL));
+			categoryRepository.save(new CategoryEntity(11, Game.LOA, Category.CITY));
+			categoryRepository.save(new CategoryEntity(12, Game.LOA, Category.GRE));
+			categoryRepository.save(new CategoryEntity(13, Game.LOA, Category.SKL));
+			categoryRepository.save(new CategoryEntity(14, Game.LOA, Category.GD));
+			categoryRepository.save(new CategoryEntity(15, Game.LOA, Category.IL));
+		};
 	}
 };

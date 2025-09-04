@@ -49,6 +49,7 @@ public class UserService {
 		return headers;
 	}
 	
+
 	// 카카오 로그인
 //	public HttpStatus kakaoLogin(String code) {
 //		String accessToken = kakaoLoginService.getAccessToken(code);
@@ -120,7 +121,7 @@ public class UserService {
 	
 	public UserDTO from(UserEntity user) {
 		UserDTO dto = UserDTO.builder().id(user.getId()).username(user.getUsername()).nickname(user.getNickname())
-				.email(user.getEmail()).password(null).point(user.getPoint()).grade(Grade.BRONZE).build();
+				.email(user.getEmail()).password(null).point(user.getPoint()).grade(user.getGrade()).nicknameBg(user.getNicknameBg()).build();
 		return dto;
 	}
 

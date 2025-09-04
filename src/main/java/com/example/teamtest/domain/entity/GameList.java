@@ -50,7 +50,7 @@ public class GameList {
 	private Integer loaMaxScore;
 	
 	public int sum() {
-		return this.getBgWeeklyScore() + this.getMsWeeklyScore() + this.getLolWeeklyScore() + this.getBgWeeklyScore() + this.getLoaWeeklyScore();
+		return this.getBgWeeklyScore() + this.getMsWeeklyScore() + this.getLolWeeklyScore() + this.getScWeeklyScore() + this.getLoaWeeklyScore();
 	}
 	
 }
