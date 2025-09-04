@@ -1,6 +1,5 @@
 package com.example.teamtest.component;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,7 +40,7 @@ public class ScheduledEvent {
 	
 	@Scheduled(cron = "0 50 23 * * 0")
 	public void weeklyEvent() {
-		totalService.calculation();
+		totalService.settlement();
 	}
 
 }

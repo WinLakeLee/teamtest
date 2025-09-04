@@ -52,5 +52,4 @@ public class GameList {
 	public int sum() {
 		return this.getBgWeeklyScore() + this.getMsWeeklyScore() + this.getLolWeeklyScore() + this.getBgWeeklyScore() + this.getLoaWeeklyScore();
 	}
-	
 }

@@ -60,8 +60,10 @@ public class QuizService {
 				QuizQuestionDTO dto = new QuizQuestionDTO();
 
 				// 전체 카테고리 조회
-				CategoryEntity category = categoryRepository.findAll().stream()
+				List<CategoryEntity> categoryList = categoryRepository.findAll().stream()
 						.filter(c -> c.getGamename().equals(Enum.valueOf(Game.class, game)))
+						.collect(Collectors.toList());
+				CategoryEntity category = categoryList.stream()
 						.findAny()
 						.orElseThrow(() -> new EntityNotFoundException("게임 카테고리가 존재하지 않습니다"));
 				
