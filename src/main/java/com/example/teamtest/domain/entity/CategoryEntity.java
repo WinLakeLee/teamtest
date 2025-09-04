@@ -1,7 +1,7 @@
 package com.example.teamtest.domain.entity;
 
 import com.example.teamtest.domain.Game;
-import com.example.teamtest.domain.QuestionType;
+import com.example.teamtest.domain.Category;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 public class CategoryEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer categoryId;
 
 	@Column
@@ -33,8 +32,6 @@ public class CategoryEntity {
 	
 	@Column
 	@Enumerated(EnumType.STRING)
-	private QuestionType description;
+	private Category category;
 	
-	
-
 }
