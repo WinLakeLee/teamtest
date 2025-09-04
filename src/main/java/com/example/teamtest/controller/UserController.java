@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import com.example.teamtest.Repository.UserRepository;
-import com.example.teamtest.domain.Grade;
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
 import com.example.teamtest.service.UserService;
@@ -29,7 +27,6 @@ public class UserController {
 	// 회원가입
 	@PostMapping("signup")
 	public ResponseEntity<?> signup(@RequestBody UserDTO user) {
-		System.out.println(user.toString());
 		Long id = userService.insert(user).getId();
 
 		return new ResponseEntity<>("회원가입 성공, 유저번호는" + id + "입니다", HttpStatus.OK);
@@ -46,7 +43,6 @@ public class UserController {
 	// 회원정보 수정
 	@PutMapping("/update")
 	public ResponseEntity<?> updateUser(Authentication auth, @RequestBody UserDTO dto) {
-
 	    String username = auth.getName();
 	    UserEntity updated = userService.update(username, dto);
 	    return ResponseEntity.ok(updated);
@@ -60,7 +56,7 @@ public class UserController {
 		if (result)
 			return ResponseEntity.ok("회원탈퇴 완료");
 		else
-			return ResponseEntity.ok("비밀번호 오류");
+			return ResponseEntity.badRequest().body("비밀번호 오류");
 	}
 	
 	// 로그인
