@@ -36,7 +36,6 @@ public class QuizService {
 	private final QuizRepository quizRepository;
 	private final CategoryRepository categoryRepository;
 	private final GameListRepository gameListRepository;
-	private final RankRepository rankRepository;
 
 	/**
 	 * 문제 수
@@ -76,7 +75,7 @@ public class QuizService {
 				// 안 나온 문제 섞기
 				Collections.shuffle(newQuizzes);
 				
-				if(newQuizzes.size() <= 0) {
+				if(newQuizzes.size() <= 1) {
 					i--;
 					break;
 				}
@@ -140,18 +139,18 @@ public class QuizService {
 	// 퀴즈별 점수를 총합
 	@Transactional(readOnly = true)
 	public List<RankingDTO> getTotalScores() {
-		return rankRepository.findAll().stream().map(rank -> {
-			Integer sum = (rank.getLolScore() != null ? rank.getLolScore() : 0)
-					+ (rank.getBgScore() != null ? rank.getBgScore() : 0)
-					+ (rank.getScScore() != null ? rank.getScScore() : 0)
-					+ (rank.getMsScore() != null ? rank.getMsScore() : 0)
-					+ (rank.getLoaScore() != null ? rank.getLoaScore() : 0);
-			return new RankingDTO(rank.getUser().getNickname(), 
-					rank.getLolScore() != null ? rank.getLolScore() : 0,
-					rank.getBgScore() != null ? rank.getBgScore() : 0,
-					rank.getScScore() != null ? rank.getScScore() : 0,
-					rank.getMsScore() != null ? rank.getMsScore() : 0,
-					rank.getLoaScore() != null ? rank.getLoaScore() : 0, sum);
+		return gameListRepository.findAll().stream().map(rank -> {
+			Integer sum = (rank.getLolWeeklyScore() != null ? rank.getLolWeeklyScore() : 0)
+					+ (rank.getBgWeeklyScore() != null ? rank.getBgWeeklyScore() : 0)
+					+ (rank.getScWeeklyScore() != null ? rank.getScWeeklyScore() : 0)
+					+ (rank.getMsWeeklyScore() != null ? rank.getMsWeeklyScore() : 0)
+					+ (rank.getLoaWeeklyScore() != null ? rank.getLoaWeeklyScore() : 0);
+			return new RankingDTO(userRepository.findById(rank.getUserId()).get().getUsername(), 
+					rank.getLolWeeklyScore() != null ? rank.getLolWeeklyScore() : 0,
+					rank.getBgWeeklyScore() != null ? rank.getBgWeeklyScore() : 0,
+					rank.getScWeeklyScore() != null ? rank.getScWeeklyScore() : 0,
+					rank.getMsWeeklyScore() != null ? rank.getMsWeeklyScore() : 0,
+					rank.getLoaWeeklyScore() != null ? rank.getLoaWeeklyScore() : 0, sum);
 		}).sorted((a, b) -> Integer.compare(b.getTotalScore(), a.getTotalScore())) // 총합 기준 내림차순
 				.limit(10) // 상위 10명
 				.collect(Collectors.toList());
@@ -161,23 +160,23 @@ public class QuizService {
 	public Map<String, List<HonorListDTO>> getScore() {
 		Map<String, List<HonorListDTO>> scoreMap = new HashMap<>();
 
-		List<HonorListDTO> lolTop5 = rankRepository.findAllByOrderByLolScoreDesc().stream().limit(5)
-				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getLolScore())).toList();
+		List<HonorListDTO> lolTop5 = gameListRepository.findAllByOrderByLolWeeklyScoreDesc().stream().limit(5)
+				.map(g -> new HonorListDTO(userRepository.findById(g.getUserId()).orElseThrow().getUsername(), g.getLolWeeklyScore())).toList();
 		scoreMap.put("LOL", lolTop5);
 
-		List<HonorListDTO> bgTop5 = rankRepository.findAllByOrderByBgScoreDesc().stream().limit(5)
-				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getBgScore())).toList();
+		List<HonorListDTO> bgTop5 = gameListRepository.findAllByOrderByBgWeeklyScoreDesc().stream().limit(5)
+				.map(g -> new HonorListDTO(userRepository.findById(g.getUserId()).orElseThrow().getUsername(), g.getBgWeeklyScore())).toList();
 		scoreMap.put("BG", bgTop5);
 
-		List<HonorListDTO> scTop5 = rankRepository.findAllByOrderByScScoreDesc().stream().limit(5)
-				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getScScore())).toList();
+		List<HonorListDTO> scTop5 = gameListRepository.findAllByOrderByScWeeklyScoreDesc().stream().limit(5)
+				.map(g -> new HonorListDTO(userRepository.findById(g.getUserId()).orElseThrow().getUsername(), g.getScWeeklyScore())).toList();
 		scoreMap.put("SC", scTop5);
 
-		List<HonorListDTO> msTop5 = rankRepository.findAllByOrderByMsScoreDesc().stream().limit(5)
-				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getMsScore())).toList();
+		List<HonorListDTO> msTop5 = gameListRepository.findAllByOrderByMsWeeklyScoreDesc().stream().limit(5)
+				.map(g -> new HonorListDTO(userRepository.findById(g.getUserId()).orElseThrow().getUsername(), g.getMsWeeklyScore())).toList();
 		scoreMap.put("MS", msTop5);
-		List<HonorListDTO> loaTop5 = rankRepository.findAllByOrderByLoaScoreDesc().stream().limit(5)
-				.map(g -> new HonorListDTO(g.getUser().getNickname(), g.getLoaScore())).toList();
+		List<HonorListDTO> loaTop5 = gameListRepository.findAllByOrderByLoaWeeklyScoreDesc().stream().limit(5)
+				.map(g -> new HonorListDTO(userRepository.findById(g.getUserId()).orElseThrow().getUsername(), g.getLoaWeeklyScore())).toList();
 		scoreMap.put("LOA", loaTop5);
 		return scoreMap;
 	}
@@ -186,6 +185,8 @@ public class QuizService {
 	public Integer result(Map<?, ?> map) {
 		Integer score = (Integer) map.get("score");
 		UserEntity user = userRepository.findByUsername((String) (map.get("username"))).orElseThrow();
+
+		System.out.println(user.getId());
 		GameList gameList = gameListRepository.findById(user.getId())
 				.orElseGet(() -> new GameList(user.getId(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		switch ((String) map.get("game")) {
