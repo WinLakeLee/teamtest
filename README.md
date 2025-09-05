@@ -56,15 +56,12 @@
 
 - MySQL
 
-## 특이 사항
+ # 🖥️ 프론트엔드
 
-```
-  @Bean
-	CommandLineRunner initItems(MarketRepository marketRepository)
-  스프링 시작할 때 자동으로 실행
+ ## 🔧 개발 툴
 
-	@Scheduled(cron = "0 0 0 * * ?")
-	public ConcurrentHashMap<?, ?> dailyEvent() 
-	매일 0시 0분에 자동으로 실행
-```
+ - React
 
+ ## 📦 라이브러리
+ 
+ - Axios
