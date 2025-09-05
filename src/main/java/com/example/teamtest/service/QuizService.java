@@ -60,11 +60,8 @@ public class QuizService {
 				QuizQuestionDTO dto = new QuizQuestionDTO();
 
 				// 전체 카테고리 조회
-				List<CategoryEntity> categoryList = categoryRepository.findAll().stream()
+				CategoryEntity category  = categoryRepository.findAll().stream()
 						.filter(c -> c.getGamename().equals(Enum.valueOf(Game.class, game)))
-						.collect(Collectors.toList());
-				Collections.shuffle(categoryList);
-				CategoryEntity category = categoryList.stream()
 						.findAny()
 						.orElseThrow(() -> new EntityNotFoundException("게임 카테고리가 존재하지 않습니다"));
 				
@@ -78,10 +75,15 @@ public class QuizService {
 
 				// 안 나온 문제 섞기
 				Collections.shuffle(newQuizzes);
-
+				
+				if(newQuizzes.size() <= 0) {
+					i--;
+					break;
+				}
+				
 				// 문제에 안 나온 문제 중 하나 추가
 				QuizEntity mainQuiz = newQuizzes.stream().findAny().orElse(null);
-
+				
 				// 이미 나온 문제에 출제 된 문제 추가
 				answeredQuizIds.add(mainQuiz.getQuizId());
 
