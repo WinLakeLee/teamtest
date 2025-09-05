@@ -37,7 +37,7 @@ public class TotalService {
 		return sb.toString();
 	}
 
-	public void calculation() {
+	public void settlement() {
 		gameListRepository.findAll()
 		.stream()
 		.collect(Collectors.groupingBy(GameList::getUserId, 
@@ -50,7 +50,8 @@ public class TotalService {
 					entity.setPoint(entity.getPoint() + sum);
 					entity.setLastWeekScore(sum);
 					entity.setTotalScore(entity.getTotalScore() + sum);
-					return userRepository.save(entity);
+					userRepository.save(entity);
+					return null;
 					})
 		.close());
 	}

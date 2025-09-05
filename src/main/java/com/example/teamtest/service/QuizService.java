@@ -60,8 +60,11 @@ public class QuizService {
 				QuizQuestionDTO dto = new QuizQuestionDTO();
 
 				// 전체 카테고리 조회
-				CategoryEntity category = categoryRepository.findAll().stream()
+				List<CategoryEntity> categoryList = categoryRepository.findAll().stream()
 						.filter(c -> c.getGamename().equals(Enum.valueOf(Game.class, game)))
+						.collect(Collectors.toList());
+				Collections.shuffle(categoryList);
+				CategoryEntity category = categoryList.stream()
 						.findAny()
 						.orElseThrow(() -> new EntityNotFoundException("게임 카테고리가 존재하지 않습니다"));
 				
@@ -181,10 +184,8 @@ public class QuizService {
 	public Integer result(Map<?, ?> map) {
 		Integer score = (Integer) map.get("score");
 		UserEntity user = userRepository.findByUsername((String) (map.get("username"))).orElseThrow();
-		System.out.println(user);
 		GameList gameList = gameListRepository.findById(user.getId())
 				.orElseGet(() -> new GameList(user.getId(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-		System.out.println(gameList);
 		switch ((String) map.get("game")) {
 		case "lol":
 			gameList.setLolWeeklyScore(gameList.getLolWeeklyScore() + score);
