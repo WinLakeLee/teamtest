@@ -65,3 +65,11 @@
  ## 📦 라이브러리
  
  - Axios
+
+
+
+	List<GameList> findAllByOrderByLolWeeklyScoreDesc();
+	List<GameList> findAllByOrderByBgWeeklyScoreDesc();
+	List<GameList> findAllByOrderByScWeeklyScoreDesc();
+	List<GameList> findAllByOrderByMsWeeklyScoreDesc();
+	List<GameList> findAllByOrderByLoaWeeklyScoreDesc();
