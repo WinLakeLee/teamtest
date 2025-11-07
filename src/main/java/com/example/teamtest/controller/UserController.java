@@ -2,6 +2,7 @@ package com.example.teamtest.controller;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,18 +13,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
-
 import com.example.teamtest.domain.DTO.UserDTO;
 import com.example.teamtest.domain.entity.UserEntity;
+import com.example.teamtest.jwt.JwtService;
 import com.example.teamtest.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
 	private final UserService userService;
-
+	private final JwtService jwtService;
+	
 	// 회원가입
 	@PostMapping("signup")
 	public ResponseEntity<?> signup(@RequestBody UserDTO user) {
@@ -66,4 +69,15 @@ public class UserController {
 		return new ResponseEntity<>(headers, HttpStatus.OK);
 	}
 
+	@PostMapping("/oauth/kakao")
+	public ResponseEntity<?> kakaologin(@RequestBody String username) {
+		System.out.println(username);
+		
+		String jwts = jwtService.createToken(username, null);
+		
+		return ResponseEntity.ok()
+				.header(HttpHeaders.AUTHORIZATION, "Bearer " + jwts)
+				.header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Authorization")
+				.build();
+	}
 }
